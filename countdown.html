@@ -30,19 +30,7 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Screen shake */
-  @keyframes shake {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(-2px, 1px); }
-    50% { transform: translate(1px, -2px); }
-    75% { transform: translate(-1px, 2px); }
-  }
-
-  body.shake {
-    animation: shake 0.15s ease, gradientShift 8s ease infinite;
-  }
-
-  /* Floating emojis */
+/* Floating emojis */
   .emoji-rain {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -388,10 +376,6 @@
     hoursEl.textContent = pad(hours);
     minutesEl.textContent = pad(minutes);
     secondsEl.textContent = pad(seconds);
-
-    // Screen shake on tick
-    document.body.classList.add('shake');
-    setTimeout(() => document.body.classList.remove('shake'), 150);
 
     // Panic meter
     const elapsed = now - PANIC_START;
