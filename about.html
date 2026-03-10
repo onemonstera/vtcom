@@ -111,6 +111,13 @@
   </div>
 
   <div class="prompt-line section-gap">
+    <span class="prompt">$</span><span class="key">cat bio.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <span class="value" id="bio"></span>
+  </div>
+
+  <div class="prompt-line section-gap">
     <span class="prompt">$</span><span class="key">cat interests.txt</span>
   </div>
   <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
@@ -151,6 +158,7 @@
     .then(d => {
       document.getElementById('name').textContent = d.name;
       document.getElementById('program').innerHTML = d.program.replace(/·/g, '<br>');
+      document.getElementById('bio').textContent = d.bio_formal;
       document.getElementById('interests').innerHTML = d.interests
         .map(i => `<span class="tag">${i.label}</span>`).join('');
       document.getElementById('currently').innerHTML = d.currently
