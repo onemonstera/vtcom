@@ -4,35 +4,35 @@
     "category": "Personal",
     "tags": ["Hardware", "IoT", "Automation"],
     "description": "Automated watering system triggered by soil moisture sensors. Built to solve the classic problem of killing plants while traveling.",
-    "status": "shipped"
+    "status": "completed"
   },
   {
     "title": "Greenhouse + Raspberry Pi Monitor",
     "category": "Personal",
     "tags": ["Hardware", "IoT", "Raspberry Pi"],
     "description": "Environmental monitoring system for a greenhouse using a Raspberry Pi — tracking temperature, humidity, and conditions in real time.",
-    "status": "shipped"
+    "status": "completed"
   },
   {
     "title": "2-Month Plant Timelapse",
     "category": "Personal",
     "tags": ["Creative", "Photography"],
     "description": "Filmed an indoor plant continuously for two months to produce a smooth timelapse. Required obsessive upfront planning — camera placement, power redundancy, remote data retrieval — so nothing could be touched once it started. A lot of engineering went into an 8-second video.",
-    "status": "shipped"
+    "status": "completed"
   },
   {
     "title": "Rainier NP Reservation Helper",
     "category": "Personal",
     "tags": ["Web", "Data Visualization"],
     "description": "A website that visualizes Mt. Rainier campsite and permit availability at a glance, with a calendar-style view. Built because the official recreation.gov UX is painful.",
-    "status": "shipped"
+    "status": "completed"
   },
   {
     "title": "Camping Reservation Notification System",
     "category": "Personal",
     "tags": ["Software", "Automation"],
     "description": "Automated alerts for campsite availability — notifies when cancellations open up spots. No more obsessively refreshing the page.",
-    "status": "shipped"
+    "status": "completed"
   },
   {
     "title": "OME Viewer — iOS & Android",

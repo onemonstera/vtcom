@@ -113,14 +113,6 @@
 
   .card.hidden { display: none; }
 
-  .card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
   .card-title {
     font-size: 0.95rem;
     font-weight: 700;
@@ -128,18 +120,11 @@
     line-height: 1.3;
   }
 
-  .status-badge {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 50px;
-    white-space: nowrap;
-    flex-shrink: 0;
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-
-  .status-shipped   { background: rgba(0,200,100,0.15); color: #4caf80; border: 1px solid rgba(0,200,100,0.3); }
-  .status-deprecated { background: rgba(150,150,150,0.1); color: #888; border: 1px solid rgba(150,150,150,0.2); }
-  .status-in-progress { background: rgba(255,200,0,0.1); color: #c8a000; border: 1px solid rgba(255,200,0,0.25); }
-  .status-concept   { background: rgba(108,99,255,0.12); color: #a09af8; border: 1px solid rgba(108,99,255,0.3); }
 
   .category-tag {
     font-size: 0.72rem;
@@ -148,9 +133,22 @@
     letter-spacing: 1px;
   }
 
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+    white-space: nowrap;
+  }
+
+  .status-shipped     { background: rgba(0,200,100,0.15); color: #4caf80; border: 1px solid rgba(0,200,100,0.3); }
+  .status-completed   { background: rgba(0,200,100,0.15); color: #4caf80; border: 1px solid rgba(0,200,100,0.3); }
+  .status-deprecated  { background: rgba(150,150,150,0.1); color: #888; border: 1px solid rgba(150,150,150,0.2); }
+  .status-in-progress { background: rgba(255,200,0,0.1); color: #c8a000; border: 1px solid rgba(255,200,0,0.25); }
+  .status-concept     { background: rgba(108,99,255,0.12); color: #a09af8; border: 1px solid rgba(108,99,255,0.3); }
+
   .card-description {
     font-size: 0.85rem;
-    color: #a0a0b8;
+    color: #c0c0d8;
     line-height: 1.6;
     flex: 1;
   }
@@ -213,6 +211,7 @@
 <script>
   const statusLabel = {
     'shipped': 'shipped',
+    'completed': 'completed',
     'deprecated': 'deprecated',
     'in-progress': 'in progress',
     'concept': 'concept'
@@ -232,11 +231,11 @@
         card.dataset.category = p.category;
 
         card.innerHTML = `
-          <div class="card-top">
-            <div class="card-title">${p.title}</div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-meta">
+            <span class="category-tag">${p.category}</span>
             <span class="status-badge status-${p.status}">${statusLabel[p.status]}</span>
           </div>
-          <div class="category-tag">${p.category}</div>
           <div class="card-description">${p.description}</div>
           <div class="tag-list">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
         `;
