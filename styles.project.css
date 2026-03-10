@@ -1,0 +1,186 @@
+/* === Shared styles for project detail pages === */
+
+body { background: #0d0d1a; color: #c8c8e0; }
+
+.project-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+/* Back link */
+.back-link {
+  display: inline-block;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  color: #6c63ff;
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+/* Header */
+.project-header { margin-bottom: 2.5rem; }
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.category-tag {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.72rem;
+  color: #6a6a8a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+.status-shipped, .status-completed {
+  background: rgba(0,200,100,0.15);
+  color: #4caf80;
+  border: 1px solid rgba(0,200,100,0.3);
+}
+.status-in-progress {
+  background: rgba(255,200,0,0.12);
+  color: #d4aa30;
+  border: 1px solid rgba(255,200,0,0.25);
+}
+.status-concept {
+  background: rgba(108,99,255,0.12);
+  color: #a09af8;
+  border: 1px solid rgba(108,99,255,0.3);
+}
+.status-deprecated {
+  background: rgba(255,255,255,0.05);
+  color: #6a6a8a;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.project-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 900;
+  color: #e8e8f0;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.project-subtitle {
+  font-size: 1.05rem;
+  color: #a0a0b8;
+  line-height: 1.6;
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(108, 99, 255, 0.15);
+  margin: 2rem 0;
+}
+
+/* Sections */
+.section { margin-bottom: 2.5rem; }
+
+.section-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #6c63ff;
+  margin-bottom: 1rem;
+}
+
+/* Prose */
+.prose {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #c8c8e0;
+}
+.prose p { margin-bottom: 1rem; }
+.prose p:last-child { margin-bottom: 0; }
+
+/* Bullet list */
+.detail-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.detail-list li {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #c8c8e0;
+  line-height: 1.5;
+}
+.detail-list li::before {
+  content: '→';
+  color: #6c63ff;
+  flex-shrink: 0;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Callout / quote */
+.callout {
+  background: rgba(108, 99, 255, 0.08);
+  border-left: 3px solid #6c63ff;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  color: #c8c8e0;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* Status note (for concepts) */
+.status-note {
+  font-size: 0.95rem;
+  color: #a0a0b8;
+  line-height: 1.7;
+  padding: 1rem 1.25rem;
+  border: 1px dashed rgba(108, 99, 255, 0.25);
+  border-radius: 8px;
+}
+
+/* Tags */
+.tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+  background: rgba(108, 99, 255, 0.1);
+  border: 1px solid rgba(108, 99, 255, 0.25);
+  color: #a09af8;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* External links */
+.project-links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.project-link {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  color: #6c63ff;
+  text-decoration: none;
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.project-link:hover {
+  background: rgba(108, 99, 255, 0.1);
+  border-color: rgba(108, 99, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .project-page { padding: 2rem 1rem 4rem; }
+}

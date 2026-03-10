@@ -5,144 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2-Month Plant Timelapse — vinhtrinh.com</title>
 <link rel="stylesheet" href="../styles.css">
-<style>
-  body {
-    background: #0d0d1a;
-    color: #c8c8e0;
-    font-family: 'Courier New', Courier, monospace;
-  }
-
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 3rem 2rem 5rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    font-size: 0.85rem;
-    color: #6c63ff;
-    text-decoration: none;
-    margin-bottom: 2.5rem;
-  }
-
-  .back-link:hover { text-decoration: underline; }
-
-  .project-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
-  }
-
-  .meta-tag {
-    font-size: 0.72rem;
-    color: #6a6a8a;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .status-badge {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 50px;
-    background: rgba(0,200,100,0.15);
-    color: #4caf80;
-    border: 1px solid rgba(0,200,100,0.3);
-  }
-
-  h1 {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    font-weight: 700;
-    color: #e8e8f0;
-    line-height: 1.2;
-    margin-bottom: 2rem;
-  }
-
-  .section {
-    margin-bottom: 2.5rem;
-  }
-
-  .section-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #6c63ff;
-    margin-bottom: 0.75rem;
-  }
-
-  p {
-    font-size: 0.95rem;
-    line-height: 1.8;
-    color: #c0c0d8;
-    margin-bottom: 1rem;
-  }
-
-  .detail-list {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .detail-list li {
-    font-size: 0.9rem;
-    color: #c0c0d8;
-    line-height: 1.6;
-    padding-left: 1.25rem;
-    position: relative;
-  }
-
-  .detail-list li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: #6c63ff;
-  }
-
-  .insight-box {
-    background: rgba(108, 99, 255, 0.07);
-    border: 1px solid rgba(108, 99, 255, 0.25);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin-top: 2rem;
-  }
-
-  .insight-box .insight-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #6c63ff;
-    margin-bottom: 0.6rem;
-  }
-
-  .insight-box p {
-    color: #c8c8e0;
-    margin-bottom: 0;
-    font-size: 0.9rem;
-  }
-
-  .tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-  }
-
-  .tag {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.6rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 4px;
-    color: #6a6a8a;
-  }
-
-  @media (max-width: 600px) {
-    .container { padding: 2rem 1rem 4rem; }
-  }
-</style>
+<link rel="stylesheet" href="../styles.project.css">
 </head>
 <body>
 
@@ -153,26 +16,28 @@
   <a href="../about.html">About</a>
 </nav>
 
-<div class="container">
-  <a href="../projects.html" class="back-link">← Back to Projects</a>
+<div class="project-page">
+  <a href="../projects.html" class="back-link">← back to projects</a>
 
-  <div class="project-meta">
-    <span class="meta-tag">Personal</span>
-    <span class="status-badge">completed</span>
+  <div class="project-header">
+    <div class="project-meta">
+      <span class="category-tag">Personal · Creative</span>
+      <span class="status-badge status-completed">completed</span>
+    </div>
+    <h1 class="project-title">2-Month Plant Timelapse</h1>
+    <p class="project-subtitle">A lot of engineering went into an 8-second video.</p>
   </div>
 
-  <h1>2-Month Plant Timelapse</h1>
+  <hr class="divider">
 
   <div class="section">
     <div class="section-label">// the project</div>
-    <p>
-      I filmed an indoor plant continuously for approximately two months to produce a smooth,
-      uninterrupted timelapse video. The final result: about 8 seconds of footage.
-    </p>
-    <p>
-      On the surface, it sounds simple — point a camera at a plant and wait. In practice,
-      it required more upfront planning than most software projects I've worked on.
-    </p>
+    <div class="prose">
+      <p>I filmed an indoor plant continuously for approximately two months to produce a smooth,
+      uninterrupted timelapse video. The final result: about 8 seconds of footage.</p>
+      <p>On the surface, it sounds simple — point a camera at a plant and wait. In practice,
+      it required more upfront planning than most software projects I've worked on.</p>
+    </div>
   </div>
 
   <div class="section">
@@ -197,25 +62,22 @@
 
   <div class="section">
     <div class="section-label">// the realization</div>
-    <p>
-      I didn't think much of it at the time — it just felt like the obvious way to approach the problem.
+    <div class="prose">
+      <p>I didn't think much of it at the time — it just felt like the obvious way to approach the problem.
       It wasn't until later that I recognized the pattern: failure-mode analysis, redundancy planning,
-      contingency scenarios for unlikely-but-catastrophic events.
-    </p>
-    <p>
-      That's the same mental model I use every day working on enterprise backup and restore systems.
-      I'd just applied it to a plant without realizing it.
-    </p>
+      contingency scenarios for unlikely-but-catastrophic events.</p>
+      <p>That's the same mental model I use every day working on enterprise backup and restore systems.
+      I'd just applied it to a plant without realizing it.</p>
+    </div>
 
-    <div class="insight-box">
-      <div class="insight-label">// the bigger point</div>
-      <p>
-        The best systems hide their complexity. Nobody watching the timelapse sees the planning,
-        the redundancy, the test runs, or the obsessive constraint management. They just see a plant growing.
-        That's the goal — in engineering, in design, in UX. All the work should be invisible in the final result.
-      </p>
+    <div class="callout">
+      The best systems hide their complexity. Nobody watching the timelapse sees the planning,
+      the redundancy, the test runs, or the obsessive constraint management. They just see a plant growing.
+      That's the goal — in engineering, in design, in UX. All the work should be invisible in the final result.
     </div>
   </div>
+
+  <hr class="divider">
 
   <div class="section">
     <div class="section-label">// tags</div>
