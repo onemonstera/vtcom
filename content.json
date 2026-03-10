@@ -1,8 +1,8 @@
 {
   "name": "Vinh Trinh",
   "program": "MS HCDE · University of Washington · Class of 2026",
-  "bio_formal": "I'm a graduate student in Human Centered Design & Engineering at UW, focused on understanding how people interact with technology — and making those interactions better. I care about research that leads to real outcomes, and design that actually works for the people using it.",
-  "bio_casual": "Hey — I'm Vinh, a grad student studying Human Centered Design & Engineering at the University of Washington. I'm interested in the messy, human side of technology: why people use things the way they do, what gets in the way, and how to fix it. I like research that actually goes somewhere, and design that respects the people it's for.",
+  "bio_formal": "I'm a software engineer pursuing an MS in Human Centered Design & Engineering at the University of Washington. I've spent my career building production systems — shipping mobile apps, enterprise APIs, and cloud infrastructure — and I'm now expanding into UX research and human-centered design. I'm drawn to the space where engineering rigor meets user understanding: where the goal isn't just a system that works, but one that works for people.",
+  "bio_casual": "Hey, I'm Vinh. By day I'm a software engineer; by night I'm an HCDE grad student at UW. I've shipped real products — production apps, cloud systems, a couple of patents — and I'm here to add the human side to that toolkit. I care about understanding why people use things the way they do, designing for the edges and not just the happy path, and building things that are thoughtful enough that nobody has to think about them. I also once spent two months filming a plant. It made a great 8-second video.",
   "interests": [
     { "icon": "🔍", "label": "UX Research" },
     { "icon": "💻", "label": "Human-Computer Interaction" },
@@ -11,14 +11,14 @@
   ],
   "currently": [
     "Finishing my capstone project (see the countdown timer for my mental state)",
-    "Figuring out what comes next after graduation",
+    "Expanding from engineering into UX research and design",
     "Probably spending too much time on this website"
   ],
   "misc": [
     "Has strong opinions about font choices",
-    "Believes the best UX is the one nobody notices",
-    "The countdown page was 100% necessary",
-    "[placeholder — add something real here]"
+    "Holds two US patents in the email/messaging space",
+    "Once spent 2 months filming a plant for an 8-second video — no regrets",
+    "Believes the best UX is the one nobody notices"
   ],
   "contact": {
     "email": "#",
