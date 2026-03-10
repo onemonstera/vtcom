@@ -17,8 +17,9 @@
     "title": "2-Month Plant Timelapse",
     "category": "Personal",
     "tags": ["Creative", "Photography"],
-    "description": "Filmed an indoor plant continuously for two months to produce a smooth timelapse. Required obsessive upfront planning — camera placement, power redundancy, remote data retrieval — so nothing could be touched once it started. A lot of engineering went into an 8-second video.",
-    "status": "completed"
+    "description": "Filmed an indoor plant for two months to produce a smooth timelapse. Turns out, a lot of engineering goes into an 8-second video.",
+    "status": "completed",
+    "link": "projects/timelapse.html"
   },
   {
     "title": "Rainier NP Reservation Helper",
