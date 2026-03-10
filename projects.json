@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Auto Indoor Plant Watering System",
+    "category": "Personal",
+    "tags": ["Hardware", "IoT", "Automation"],
+    "description": "Automated watering system triggered by soil moisture sensors. Built to solve the classic problem of killing plants while traveling.",
+    "status": "shipped"
+  },
+  {
+    "title": "Greenhouse + Raspberry Pi Monitor",
+    "category": "Personal",
+    "tags": ["Hardware", "IoT", "Raspberry Pi"],
+    "description": "Environmental monitoring system for a greenhouse using a Raspberry Pi — tracking temperature, humidity, and conditions in real time.",
+    "status": "shipped"
+  },
+  {
+    "title": "2-Month Plant Timelapse",
+    "category": "Personal",
+    "tags": ["Creative", "Photography"],
+    "description": "Filmed an indoor plant continuously for two months to produce a smooth timelapse. Required obsessive upfront planning — camera placement, power redundancy, remote data retrieval — so nothing could be touched once it started. A lot of engineering went into an 8-second video.",
+    "status": "shipped"
+  },
+  {
+    "title": "Rainier NP Reservation Helper",
+    "category": "Personal",
+    "tags": ["Web", "Data Visualization"],
+    "description": "A website that visualizes Mt. Rainier campsite and permit availability at a glance, with a calendar-style view. Built because the official recreation.gov UX is painful.",
+    "status": "shipped"
+  },
+  {
+    "title": "Camping Reservation Notification System",
+    "category": "Personal",
+    "tags": ["Software", "Automation"],
+    "description": "Automated alerts for campsite availability — notifies when cancellations open up spots. No more obsessively refreshing the page.",
+    "status": "shipped"
+  },
+  {
+    "title": "OME Viewer — iOS & Android",
+    "category": "Professional",
+    "tags": ["Mobile", "iOS", "Android", "Security"],
+    "description": "End-to-end encrypted email viewer shipped on both iOS and Android. A production mobile app used by real users — later deprecated.",
+    "status": "deprecated"
+  },
+  {
+    "title": "Azure Backup & Restore Portal (PITR)",
+    "category": "Professional",
+    "tags": ["Software", "Cloud", "Enterprise"],
+    "description": "User-facing portal for Point In Time Restore on Azure Backup. Enterprise-scale product work shipping UI that real customers depend on for data recovery.",
+    "status": "shipped"
+  },
+  {
+    "title": "Azure Backup & Restore APIs",
+    "category": "Professional",
+    "tags": ["Software", "Cloud", "APIs"],
+    "description": "Backend APIs powering Azure Backup and Restore functionality. Systems design and API architecture at enterprise scale.",
+    "status": "shipped"
+  },
+  {
+    "title": "Two US Patents",
+    "category": "Professional",
+    "tags": ["Patents", "Email", "Messaging"],
+    "description": "Holds two US patents in the email and messaging space, filed during work on encrypted communication systems.",
+    "status": "shipped",
+    "highlight": true
+  },
+  {
+    "title": "Care Package App",
+    "category": "School",
+    "tags": ["UX Research", "Mobile", "HCI"],
+    "description": "App concept for sending digital check-ins and care packages to loved ones — designed to address the feeling of distance and the desire for lightweight, thoughtful connection.",
+    "status": "concept"
+  },
+  {
+    "title": "AmuseMe — Augmented Museum Experience",
+    "category": "School",
+    "tags": ["HCI", "AR", "Interaction Design"],
+    "description": "Augmented reality app concept for enriching museum visits, blending physical artifacts with digital context and interactive layers.",
+    "status": "concept"
+  },
+  {
+    "title": "Capstone Project",
+    "category": "School",
+    "tags": ["UX Research", "HCDE"],
+    "description": "Master's capstone project in progress — details coming after June 2026. Check the countdown page for current stress levels.",
+    "status": "in-progress"
+  },
+  {
+    "title": "GratApp",
+    "category": "Concept",
+    "tags": ["Mobile", "Wellness", "Habit Design"],
+    "description": "App concept for daily gratitude reminders — exploring habit-forming design and the intersection of mental wellness and UX.",
+    "status": "concept"
+  },
+  {
+    "title": "DisappearINK",
+    "category": "Concept",
+    "tags": ["Mobile", "Mental Wellness", "UX"],
+    "description": "App for offloading thoughts and ideas to free up mental space — content disappears after a set time. The point is release, not record. Strong enough concept to write up as a case study.",
+    "status": "concept"
+  }
+]
