@@ -24,23 +24,10 @@
     line-height: 1.7;
   }
 
-  .prompt {
-    color: #6c63ff;
-    margin-right: 0.5rem;
-    user-select: none;
-  }
-
-  .key {
-    color: #a0a0b8;
-  }
-
-  .value {
-    color: #e8e8f0;
-  }
-
-  .section-gap {
-    margin-top: 2.5rem;
-  }
+  .prompt { color: #6c63ff; margin-right: 0.5rem; user-select: none; }
+  .key { color: #a0a0b8; }
+  .value { color: #e8e8f0; }
+  .section-gap { margin-top: 2.5rem; }
 
   .comment {
     color: #4a4a6a;
@@ -106,56 +93,41 @@
 </nav>
 
 <div class="terminal">
-
   <div class="comment"># about.txt — last updated: sometime in 2026</div>
 
   <div class="prompt-line">
-    <span class="prompt">$</span>
-    <span class="key">whoami</span>
+    <span class="prompt">$</span><span class="key">whoami</span>
   </div>
-  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
-    <span class="value">Vinh Trinh</span>
-  </div>
-
-  <div class="prompt-line section-gap">
-    <span class="prompt">$</span>
-    <span class="key">cat role.txt</span>
-  </div>
-  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
-    <span class="value">MS student @ University of Washington<br>
-    Human Centered Design &amp; Engineering, Class of 2026</span>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <span class="value" id="name"></span>
   </div>
 
   <div class="prompt-line section-gap">
-    <span class="prompt">$</span>
-    <span class="key">cat interests.txt</span>
+    <span class="prompt">$</span><span class="key">cat role.txt</span>
   </div>
-  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
-    <div class="tag-list">
-      <span class="tag">UX Research</span>
-      <span class="tag">Human-Computer Interaction</span>
-      <span class="tag">Accessible Design</span>
-      <span class="tag">Design Systems</span>
-      <span class="tag">Making things that work well</span>
-    </div>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <span class="value" id="program"></span>
   </div>
 
   <div class="prompt-line section-gap">
-    <span class="prompt">$</span>
-    <span class="key">cat currently.txt</span>
+    <span class="prompt">$</span><span class="key">cat interests.txt</span>
   </div>
-  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
-    <span class="value">→ Finishing capstone (see the countdown timer for my mental state)<br>
-    → Figuring out what comes next<br>
-    → Definitely not over-engineering this website</span>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <div class="tag-list" id="interests"></div>
   </div>
 
   <div class="prompt-line section-gap">
-    <span class="prompt">$</span>
-    <span class="key">cat contact.txt</span>
+    <span class="prompt">$</span><span class="key">cat currently.txt</span>
   </div>
-  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
-    <span class="value">[ placeholder — add email / LinkedIn here ]</span>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <span class="value" id="currently"></span>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span><span class="key">cat contact.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top:-1rem;padding-left:1rem;">
+    <span class="value" id="contact"></span>
   </div>
 
   <div class="prompt-line section-gap">
@@ -164,14 +136,28 @@
 
   <div class="variant-note">
     <div>Style variants — pick your favorite:</div>
-    <div class="variant-links" style="margin-top: 0.5rem;">
+    <div class="variant-links" style="margin-top:0.5rem;">
       <a href="about.html" class="current">A: Terminal</a>
       <a href="about-b.html">B: Clean Card</a>
       <a href="about-c.html">C: Expressive</a>
     </div>
   </div>
-
 </div>
+
+<script>
+  fetch('content.json')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('name').textContent = d.name;
+      document.getElementById('program').innerHTML = d.program.replace(/·/g, '<br>');
+      document.getElementById('interests').innerHTML = d.interests
+        .map(i => `<span class="tag">${i.label}</span>`).join('');
+      document.getElementById('currently').innerHTML = d.currently
+        .map(c => `→ ${c}`).join('<br>');
+      document.getElementById('contact').innerHTML =
+        `<a href="${d.contact.email}" style="color:#a09af8">email</a> &nbsp;·&nbsp; <a href="${d.contact.linkedin}" style="color:#a09af8">LinkedIn</a>`;
+    });
+</script>
 
 </body>
 </html>

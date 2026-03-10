@@ -1,0 +1,27 @@
+{
+  "name": "Vinh Trinh",
+  "program": "MS HCDE · University of Washington · Class of 2026",
+  "bio_formal": "I'm a graduate student in Human Centered Design & Engineering at UW, focused on understanding how people interact with technology — and making those interactions better. I care about research that leads to real outcomes, and design that actually works for the people using it.",
+  "bio_casual": "Hey — I'm Vinh, a grad student studying Human Centered Design & Engineering at the University of Washington. I'm interested in the messy, human side of technology: why people use things the way they do, what gets in the way, and how to fix it. I like research that actually goes somewhere, and design that respects the people it's for.",
+  "interests": [
+    { "icon": "🔍", "label": "UX Research" },
+    { "icon": "💻", "label": "Human-Computer Interaction" },
+    { "icon": "♿", "label": "Accessible Design" },
+    { "icon": "🧩", "label": "Design Systems" }
+  ],
+  "currently": [
+    "Finishing my capstone project (see the countdown timer for my mental state)",
+    "Figuring out what comes next after graduation",
+    "Probably spending too much time on this website"
+  ],
+  "misc": [
+    "Has strong opinions about font choices",
+    "Believes the best UX is the one nobody notices",
+    "The countdown page was 100% necessary",
+    "[placeholder — add something real here]"
+  ],
+  "contact": {
+    "email": "#",
+    "linkedin": "#"
+  }
+}

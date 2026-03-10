@@ -6,10 +6,7 @@
 <title>About — vinhtrinh.com</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  body {
-    background: #0f0f1e;
-    color: #e0e0f0;
-  }
+  body { background: #0f0f1e; color: #e0e0f0; }
 
   .hero {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1040 100%);
@@ -29,26 +26,11 @@
     margin-bottom: 0.5rem;
   }
 
-  .hero-sub {
-    font-size: 1rem;
-    color: #a0a0b8;
-    letter-spacing: 1px;
-  }
+  .hero-sub { font-size: 1rem; color: #a0a0b8; letter-spacing: 1px; }
+  .hero-sub span { color: #6c63ff; font-weight: 600; }
 
-  .hero-sub span {
-    color: #6c63ff;
-    font-weight: 600;
-  }
-
-  .content {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-  }
-
-  .section {
-    margin-bottom: 3rem;
-  }
+  .content { max-width: 720px; margin: 0 auto; padding: 3rem 2rem; }
+  .section { margin-bottom: 3rem; }
 
   .section-title {
     font-family: 'Courier New', Courier, monospace;
@@ -59,11 +41,7 @@
     margin-bottom: 1rem;
   }
 
-  .bio-text {
-    font-size: 1.05rem;
-    line-height: 1.85;
-    color: #c8c8e0;
-  }
+  .bio-text { font-size: 1.05rem; line-height: 1.85; color: #c8c8e0; }
 
   .interest-grid {
     display: grid;
@@ -86,17 +64,9 @@
     background: rgba(108, 99, 255, 0.15);
   }
 
-  .interest-card .icon {
-    font-size: 1.3rem;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
+  .interest-card .icon { font-size: 1.3rem; margin-bottom: 0.4rem; display: block; }
 
-  .currently-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+  .currently-items { display: flex; flex-direction: column; gap: 0.75rem; }
 
   .currently-item {
     display: flex;
@@ -132,11 +102,7 @@
   }
 
   .fun-fact:last-child { border-bottom: none; }
-
-  .fun-fact::before {
-    content: '✦ ';
-    color: #6c63ff;
-  }
+  .fun-fact::before { content: '✦ '; color: #6c63ff; }
 
   .contact-section {
     text-align: center;
@@ -146,13 +112,7 @@
     font-size: 0.9rem;
   }
 
-  .contact-section a {
-    color: #6c63ff;
-    text-decoration: none;
-    margin: 0 0.5rem;
-    font-weight: 500;
-  }
-
+  .contact-section a { color: #6c63ff; text-decoration: none; margin: 0 0.5rem; font-weight: 500; }
   .contact-section a:hover { text-decoration: underline; }
 
   .variant-note {
@@ -162,12 +122,7 @@
     color: #4a4a6a;
   }
 
-  .variant-links a {
-    color: #6c63ff;
-    text-decoration: none;
-    margin: 0 0.5rem;
-  }
-
+  .variant-links a { color: #6c63ff; text-decoration: none; margin: 0 0.5rem; }
   .variant-links a:hover { text-decoration: underline; }
   .variant-links a.current { color: #4a4a6a; pointer-events: none; }
 </style>
@@ -181,66 +136,61 @@
 </nav>
 
 <div class="hero">
-  <div class="hero-name">Vinh Trinh</div>
-  <div class="hero-sub">MS HCDE · <span>UW</span> · Class of 2026</div>
+  <div class="hero-name" id="name"></div>
+  <div class="hero-sub" id="program"></div>
 </div>
 
 <div class="content">
-
   <div class="section">
     <div class="section-title">// who i am</div>
-    <p class="bio-text">
-      Hey — I'm Vinh, a grad student studying Human Centered Design &amp; Engineering at the
-      University of Washington. I'm interested in the messy, human side of technology:
-      why people use things the way they do, what gets in the way, and how to fix it.
-      I like research that actually goes somewhere, and design that respects the people it's for.
-    </p>
+    <p class="bio-text" id="bio"></p>
   </div>
 
   <div class="section">
     <div class="section-title">// what i care about</div>
-    <div class="interest-grid">
-      <div class="interest-card"><span class="icon">🔍</span>UX Research</div>
-      <div class="interest-card"><span class="icon">💻</span>Human-Computer Interaction</div>
-      <div class="interest-card"><span class="icon">♿</span>Accessible Design</div>
-      <div class="interest-card"><span class="icon">🧩</span>Design Systems</div>
-    </div>
+    <div class="interest-grid" id="interests"></div>
   </div>
 
   <div class="section">
     <div class="section-title">// currently</div>
-    <div class="currently-items">
-      <div class="currently-item"><div class="dot"></div>Surviving capstone season (the timer on this site is very real)</div>
-      <div class="currently-item"><div class="dot"></div>Thinking about what I want to do after graduation</div>
-      <div class="currently-item"><div class="dot"></div>Spending way too much time on this personal site</div>
-    </div>
+    <div class="currently-items" id="currently"></div>
   </div>
 
   <div class="section">
     <div class="section-title">// misc</div>
-    <div class="fun-facts">
-      <div class="fun-fact">Has strong opinions about font choices</div>
-      <div class="fun-fact">Believes the best UX is the one nobody notices</div>
-      <div class="fun-fact">The countdown page was 100% necessary</div>
-      <div class="fun-fact">[placeholder — add something real here]</div>
-    </div>
+    <div class="fun-facts" id="misc"></div>
   </div>
-
 </div>
 
-<div class="contact-section">
-  Say hi: <a href="#">email</a> · <a href="#">LinkedIn</a>
-  <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #4a4a6a;">[placeholder — add real links]</div>
-</div>
+<div class="contact-section" id="contact"></div>
 
 <div class="variant-note">
   Style variants — pick your favorite:
-  <div class="variant-links" style="margin-top: 0.4rem;">
+  <div class="variant-links" style="margin-top:0.4rem;">
     <a href="about.html">A: Terminal</a>
     <a href="about-b.html">B: Clean Card</a>
     <a href="about-c.html" class="current">C: Expressive</a>
   </div>
 </div>
+
+<script>
+  fetch('content.json')
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('name').textContent = d.name;
+      document.getElementById('program').innerHTML =
+        d.program.replace('UW', '<span>UW</span>');
+      document.getElementById('bio').textContent = d.bio_casual;
+      document.getElementById('interests').innerHTML = d.interests
+        .map(i => `<div class="interest-card"><span class="icon">${i.icon}</span>${i.label}</div>`).join('');
+      document.getElementById('currently').innerHTML = d.currently
+        .map(c => `<div class="currently-item"><div class="dot"></div>${c}</div>`).join('');
+      document.getElementById('misc').innerHTML = d.misc
+        .map(m => `<div class="fun-fact">${m}</div>`).join('');
+      document.getElementById('contact').innerHTML =
+        `Say hi: <a href="${d.contact.email}">email</a> · <a href="${d.contact.linkedin}">LinkedIn</a>`;
+    });
+</script>
 
 </body>
 </html>
