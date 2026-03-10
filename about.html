@@ -5,6 +5,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — vinhtrinh.com</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    background: #0d0d1a;
+    color: #c8c8e0;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .terminal {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    min-height: calc(100vh - 56px);
+  }
+
+  .prompt-line {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .prompt {
+    color: #6c63ff;
+    margin-right: 0.5rem;
+    user-select: none;
+  }
+
+  .key {
+    color: #a0a0b8;
+  }
+
+  .value {
+    color: #e8e8f0;
+  }
+
+  .section-gap {
+    margin-top: 2.5rem;
+  }
+
+  .comment {
+    color: #4a4a6a;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+  }
+
+  .tag {
+    background: rgba(108, 99, 255, 0.15);
+    border: 1px solid rgba(108, 99, 255, 0.4);
+    color: #a09af8;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1em;
+    background: #6c63ff;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .variant-note {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2a2a4a;
+    font-size: 0.75rem;
+    color: #4a4a6a;
+  }
+
+  .variant-links a {
+    color: #6c63ff;
+    text-decoration: none;
+    margin-right: 1rem;
+  }
+
+  .variant-links a:hover { text-decoration: underline; }
+  .variant-links a.current { color: #a0a0b8; pointer-events: none; }
+</style>
 </head>
 <body>
 
@@ -14,10 +105,73 @@
   <a href="about.html" class="active">About</a>
 </nav>
 
-<main class="page-body">
-  <h1 class="page-title">About Vinh</h1>
-  <p class="page-subtitle">More details coming soon. For now, just know there's a capstone to finish first.</p>
-</main>
+<div class="terminal">
+
+  <div class="comment"># about.txt — last updated: sometime in 2026</div>
+
+  <div class="prompt-line">
+    <span class="prompt">$</span>
+    <span class="key">whoami</span>
+  </div>
+  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
+    <span class="value">Vinh Trinh</span>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span>
+    <span class="key">cat role.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
+    <span class="value">MS student @ University of Washington<br>
+    Human Centered Design &amp; Engineering, Class of 2026</span>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span>
+    <span class="key">cat interests.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
+    <div class="tag-list">
+      <span class="tag">UX Research</span>
+      <span class="tag">Human-Computer Interaction</span>
+      <span class="tag">Accessible Design</span>
+      <span class="tag">Design Systems</span>
+      <span class="tag">Making things that work well</span>
+    </div>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span>
+    <span class="key">cat currently.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
+    <span class="value">→ Finishing capstone (see the countdown timer for my mental state)<br>
+    → Figuring out what comes next<br>
+    → Definitely not over-engineering this website</span>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span>
+    <span class="key">cat contact.txt</span>
+  </div>
+  <div class="prompt-line" style="margin-top: -1rem; padding-left: 1rem;">
+    <span class="value">[ placeholder — add email / LinkedIn here ]</span>
+  </div>
+
+  <div class="prompt-line section-gap">
+    <span class="prompt">$</span><span class="cursor"></span>
+  </div>
+
+  <div class="variant-note">
+    <div>Style variants — pick your favorite:</div>
+    <div class="variant-links" style="margin-top: 0.5rem;">
+      <a href="about.html" class="current">A: Terminal</a>
+      <a href="about-b.html">B: Clean Card</a>
+      <a href="about-c.html">C: Expressive</a>
+    </div>
+  </div>
+
+</div>
 
 </body>
 </html>

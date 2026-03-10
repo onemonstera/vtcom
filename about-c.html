@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    background: #0f0f1e;
+    color: #e0e0f0;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1040 100%);
+    border-bottom: 1px solid rgba(108, 99, 255, 0.2);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+  }
+
+  .hero-name {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    font-weight: 900;
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(135deg, #ffffff 0%, #a09af8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: #a0a0b8;
+    letter-spacing: 1px;
+  }
+
+  .hero-sub span {
+    color: #6c63ff;
+    font-weight: 600;
+  }
+
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin-bottom: 1rem;
+  }
+
+  .bio-text {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #c8c8e0;
+  }
+
+  .interest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .interest-card {
+    background: rgba(108, 99, 255, 0.08);
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    font-size: 0.9rem;
+    color: #c8c8e0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .interest-card:hover {
+    border-color: rgba(108, 99, 255, 0.5);
+    background: rgba(108, 99, 255, 0.15);
+  }
+
+  .interest-card .icon {
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .currently-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .currently-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #c8c8e0;
+    line-height: 1.5;
+  }
+
+  .currently-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6c63ff;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .fun-facts {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .fun-fact {
+    font-size: 0.9rem;
+    color: #a0a0b8;
+    line-height: 1.7;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .fun-fact:last-child { border-bottom: none; }
+
+  .fun-fact::before {
+    content: '✦ ';
+    color: #6c63ff;
+  }
+
+  .contact-section {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    color: #a0a0b8;
+    font-size: 0.9rem;
+  }
+
+  .contact-section a {
+    color: #6c63ff;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    font-weight: 500;
+  }
+
+  .contact-section a:hover { text-decoration: underline; }
+
+  .variant-note {
+    text-align: center;
+    padding: 1rem 2rem 2rem;
+    font-size: 0.75rem;
+    color: #4a4a6a;
+  }
+
+  .variant-links a {
+    color: #6c63ff;
+    text-decoration: none;
+    margin: 0 0.5rem;
+  }
+
+  .variant-links a:hover { text-decoration: underline; }
+  .variant-links a.current { color: #4a4a6a; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="countdown.html">Countdown</a>
+  <a href="about.html" class="active">About</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-name">Vinh Trinh</div>
+  <div class="hero-sub">MS HCDE · <span>UW</span> · Class of 2026</div>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-title">// who i am</div>
+    <p class="bio-text">
+      Hey — I'm Vinh, a grad student studying Human Centered Design &amp; Engineering at the
+      University of Washington. I'm interested in the messy, human side of technology:
+      why people use things the way they do, what gets in the way, and how to fix it.
+      I like research that actually goes somewhere, and design that respects the people it's for.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">// what i care about</div>
+    <div class="interest-grid">
+      <div class="interest-card"><span class="icon">🔍</span>UX Research</div>
+      <div class="interest-card"><span class="icon">💻</span>Human-Computer Interaction</div>
+      <div class="interest-card"><span class="icon">♿</span>Accessible Design</div>
+      <div class="interest-card"><span class="icon">🧩</span>Design Systems</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">// currently</div>
+    <div class="currently-items">
+      <div class="currently-item"><div class="dot"></div>Surviving capstone season (the timer on this site is very real)</div>
+      <div class="currently-item"><div class="dot"></div>Thinking about what I want to do after graduation</div>
+      <div class="currently-item"><div class="dot"></div>Spending way too much time on this personal site</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">// misc</div>
+    <div class="fun-facts">
+      <div class="fun-fact">Has strong opinions about font choices</div>
+      <div class="fun-fact">Believes the best UX is the one nobody notices</div>
+      <div class="fun-fact">The countdown page was 100% necessary</div>
+      <div class="fun-fact">[placeholder — add something real here]</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="contact-section">
+  Say hi: <a href="#">email</a> · <a href="#">LinkedIn</a>
+  <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #4a4a6a;">[placeholder — add real links]</div>
+</div>
+
+<div class="variant-note">
+  Style variants — pick your favorite:
+  <div class="variant-links" style="margin-top: 0.4rem;">
+    <a href="about.html">A: Terminal</a>
+    <a href="about-b.html">B: Clean Card</a>
+    <a href="about-c.html" class="current">C: Expressive</a>
+  </div>
+</div>
+
+</body>
+</html>

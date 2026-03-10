@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    background: #f4f4f8;
+  }
+
+  .about-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: calc(100vh - 56px);
+    padding: 4rem 2rem;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(26, 26, 46, 0.08);
+    padding: 3rem;
+    max-width: 620px;
+    width: 100%;
+  }
+
+  .card-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.25rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    color: #6c63ff;
+    font-weight: 500;
+  }
+
+  .bio {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #444;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 0.6rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .chip {
+    background: #f0effb;
+    color: #6c63ff;
+    border: 1px solid #d4d1f7;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .currently-list {
+    list-style: none;
+    padding: 0;
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .currently-list li::before {
+    content: '→ ';
+    color: #6c63ff;
+    font-weight: 700;
+  }
+
+  .contact-row {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #888;
+  }
+
+  .contact-row a {
+    color: #6c63ff;
+    text-decoration: none;
+  }
+
+  .contact-row a:hover { text-decoration: underline; }
+
+  .variant-note {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 0.75rem;
+    color: #bbb;
+  }
+
+  .variant-links a {
+    color: #6c63ff;
+    text-decoration: none;
+    margin-right: 1rem;
+  }
+
+  .variant-links a:hover { text-decoration: underline; }
+  .variant-links a.current { color: #bbb; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="countdown.html">Countdown</a>
+  <a href="about.html" class="active">About</a>
+</nav>
+
+<div class="about-wrapper">
+  <div class="card">
+
+    <div class="card-header">
+      <div class="name">Vinh Trinh</div>
+      <div class="tagline">MS HCDE · University of Washington · Class of 2026</div>
+    </div>
+
+    <p class="bio">
+      I'm a graduate student in Human Centered Design &amp; Engineering at UW,
+      focused on understanding how people interact with technology — and making
+      those interactions better. I care about research that leads to real outcomes,
+      and design that actually works for the people using it.
+    </p>
+
+    <div class="section-label">Interests</div>
+    <div class="chips">
+      <span class="chip">UX Research</span>
+      <span class="chip">Human-Computer Interaction</span>
+      <span class="chip">Accessible Design</span>
+      <span class="chip">Design Systems</span>
+    </div>
+
+    <div class="section-label">Currently</div>
+    <ul class="currently-list">
+      <li>Finishing my capstone project</li>
+      <li>Looking for what comes next</li>
+      <li>Probably over-engineering this website</li>
+    </ul>
+
+    <div class="contact-row">
+      Get in touch: <a href="#">email</a> · <a href="#">LinkedIn</a>
+      <span style="color:#ddd; margin: 0 0.25rem;">·</span>
+      <span style="font-size:0.8rem;">[placeholder — add real links]</span>
+    </div>
+
+    <div class="variant-note">
+      <div>Style variants — pick your favorite:</div>
+      <div class="variant-links" style="margin-top: 0.4rem;">
+        <a href="about.html">A: Terminal</a>
+        <a href="about-b.html" class="current">B: Clean Card</a>
+        <a href="about-c.html">C: Expressive</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
