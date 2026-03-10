@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    background: #0a0a0a;
+    color: #888;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .page-body {
+    min-height: calc(100vh - 56px);
+  }
+
+  .page-title {
+    font-family: 'Courier New', Courier, monospace;
+    color: #555;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 400;
+  }
+
+  .page-title .highlight {
+    color: #aaa;
+    background: #1a1a1a;
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    border: 1px solid #333;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: #555;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .page-subtitle {
+    color: #444;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    margin-top: 1.5rem;
+  }
+
+  .page-subtitle a {
+    color: #666;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+  }
+
+  .page-subtitle a:hover {
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="active">Home</a>
+  <a href="countdown.html">Countdown</a>
+  <a href="about.html">About</a>
+</nav>
+
+<main class="page-body">
+  <h1 class="page-title"><span class="highlight">vinhtrinh.com</span> is under construction<span class="cursor"></span></h1>
+  <p class="page-subtitle">something is coming. in the meantime, check out the <a href="countdown.html">capstone countdown</a>.</p>
+</main>
+
+</body>
+</html>

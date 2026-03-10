@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capstone Countdown — vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Override shared styles for chaotic countdown page */
+  body {
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+    background: linear-gradient(135deg, #ff1493, #39ff14, #ff6600, #00ffff);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    overflow-x: hidden;
+    cursor: crosshair;
+    position: relative;
+  }
+
+  /* Keep nav clean but tint it to match */
+  nav {
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 100% 0%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 0% 100%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Screen shake */
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-2px, 1px); }
+    50% { transform: translate(1px, -2px); }
+    75% { transform: translate(-1px, 2px); }
+  }
+
+  body.shake {
+    animation: shake 0.15s ease, gradientShift 8s ease infinite;
+  }
+
+  /* Floating emojis */
+  .emoji-rain {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .falling-emoji {
+    position: absolute;
+    font-size: 2rem;
+    animation: emojiFloat linear infinite;
+    opacity: 0.6;
+  }
+
+  @keyframes emojiFloat {
+    0% { transform: translateY(-5vh) rotate(0deg); opacity: 0.7; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Main content */
+  .content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* Header */
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 900;
+    transform: rotate(-2deg);
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbowText 3s linear infinite;
+    text-shadow: none;
+    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.3));
+    letter-spacing: 3px;
+  }
+
+  @keyframes rainbowText {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Subtitle */
+  .subtitle {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    color: #fff;
+    text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+    margin-bottom: 2rem;
+    min-height: 2.5em;
+    transition: opacity 0.3s;
+  }
+
+  .subtitle.fade { opacity: 0; }
+
+  /* Countdown */
+  .countdown {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .time-box {
+    background: rgba(0, 0, 0, 0.7);
+    border: 4px solid #fff;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    min-width: 100px;
+    animation: wobble 2s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .time-box:nth-child(2) { animation-delay: 0.3s; }
+  .time-box:nth-child(3) { animation-delay: 0.6s; }
+  .time-box:nth-child(4) { animation-delay: 0.9s; }
+
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-1deg) scale(1); }
+    50% { transform: rotate(1deg) scale(1.03); }
+  }
+
+  .time-number {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    color: #fff;
+    -webkit-text-stroke: 2px #000;
+    text-shadow: 3px 3px 0 #000;
+    line-height: 1;
+  }
+
+  .time-label {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    color: #ffff00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 0.5rem;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  /* Panic meter */
+  .panic-section {
+    width: min(90vw, 600px);
+    margin: 0 auto 2rem;
+  }
+
+  .panic-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+  }
+
+  .panic-bar-bg {
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid #fff;
+    border-radius: 50px;
+    height: 35px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panic-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 1s ease;
+    background: linear-gradient(90deg, #00ff00, #88ff00, #ffff00, #ff8800, #ff0000);
+    position: relative;
+  }
+
+  .panic-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50px 50px 0 0;
+  }
+
+  .panic-status {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    margin-top: 0.5rem;
+    font-weight: 900;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 1.5rem;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  footer .fine-dog {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 0.3rem;
+  }
+
+  /* Post-deadline state */
+  .game-over {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 56px);
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .game-over h1 {
+    font-size: clamp(2rem, 8vw, 5rem);
+    animation: rainbowText 1s linear infinite;
+    transform: rotate(0deg);
+    margin-bottom: 1rem;
+  }
+
+  .game-over p {
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 500px) {
+    .countdown { gap: 0.5rem; }
+    .time-box { min-width: 70px; padding: 0.7rem 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="countdown.html" class="active">Countdown</a>
+  <a href="about.html">About</a>
+</nav>
+
+<div class="emoji-rain" id="emojiRain"></div>
+
+<div class="content" id="mainContent">
+  <h1>CAPSTONE COUNTDOWN</h1>
+  <div class="subtitle" id="subtitle">you should be working right now</div>
+
+  <div class="countdown" id="countdown">
+    <div class="time-box">
+      <div class="time-number" id="days">--</div>
+      <div class="time-label">Days</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="hours">--</div>
+      <div class="time-label">Hours</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="minutes">--</div>
+      <div class="time-label">Minutes</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="seconds">--</div>
+      <div class="time-label">Seconds</div>
+    </div>
+  </div>
+
+  <div class="panic-section">
+    <div class="panic-label">
+      <span>vibing &#x1F60E;</span>
+      <span>DEFCON 1 &#x1F4A5;</span>
+    </div>
+    <div class="panic-bar-bg">
+      <div class="panic-bar-fill" id="panicFill" style="width: 0%"></div>
+    </div>
+    <div class="panic-status" id="panicStatus">Loading panic levels...</div>
+  </div>
+
+  <footer>
+    UW HCDE &mdash; Class of 2026 &#x1F393;
+    <div class="fine-dog">&#x1F525;&#x1F436;&#x2615; <i>this is fine</i> &#x1F525;</div>
+  </footer>
+</div>
+
+<div class="game-over" id="gameOver">
+  <h1>IT'S OVER.</h1>
+  <p>GO. SUBMIT. NOW. &#x1F6A8;&#x1F6A8;&#x1F6A8;</p>
+  <p style="margin-top:1rem; font-size: clamp(2rem, 6vw, 4rem);">&#x1F480;&#x1F525;&#x1F393;&#x1F480;&#x1F525;&#x1F393;</p>
+  <p style="margin-top:2rem; font-size: clamp(0.9rem, 2vw, 1.2rem); color: #ffff00; text-shadow: 1px 1px 0 #000;">
+    (or celebrate if you already did &#x1F389;)
+  </p>
+</div>
+
+<script>
+  // Target: June 3, 2026 11:59 PM Pacific
+  // Pacific Daylight Time (UTC-7) in effect in June
+  const DEADLINE = new Date('2026-06-04T06:59:00Z'); // 11:59 PM PDT = 06:59 UTC next day
+
+  // Total window for panic meter: from a "start date" to deadline
+  const PANIC_START = new Date('2026-01-01T00:00:00Z'); // start of the year
+  const PANIC_TOTAL = DEADLINE - PANIC_START;
+
+  const subtitleMessages = [
+    "you should be working right now",
+    "how many slides do you have? \u{1F928}",
+    "sleep is for the graduated \u{1F634}",
+    "have you emailed your advisor yet? \u{1F4E7}",
+    "the IRB isn't going to submit itself",
+    "\"i'll start tomorrow\" \u2014 you, yesterday",
+    "your Figma prototype is not a thesis",
+    "this meeting could've been an email",
+    "remember when you thought spring would be chill? \u{1F921}",
+    "alt+F4 won't help you now",
+    "citation needed \u{1F4DA}",
+    "scope creep is not a feature",
+    "just one more user interview... right?",
+    "the gantt chart is a lie",
+    "your capstone can smell your fear",
+    "vibes are not a methodology"
+  ];
+
+  const panicLevels = [
+    { max: 10, label: "Vibing \u{1F60E}", color: "#00ff00" },
+    { max: 25, label: "Slight concern \u{1F605}", color: "#88ff00" },
+    { max: 40, label: "Nervous laughter \u{1F62C}", color: "#ccff00" },
+    { max: 55, label: "Stress-eating \u{1F355}", color: "#ffff00" },
+    { max: 70, label: "Existential dread \u{1F630}", color: "#ffaa00" },
+    { max: 85, label: "Full panic mode \u{1F631}", color: "#ff5500" },
+    { max: 95, label: "Screaming into void \u{1F525}", color: "#ff2200" },
+    { max: 100, label: "DEFCON 1 \u{1F4A5}\u{1F480}", color: "#ff0000" }
+  ];
+
+  const emojis = ['\u{1F525}', '\u{1F480}', '\u23F0', '\u{1F393}', '\u{1F4A5}', '\u{1F6A8}', '\u{1F62D}', '\u{1F921}', '\u2620\uFE0F', '\u26A0\uFE0F'];
+
+  // DOM refs
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
+  const subtitleEl = document.getElementById('subtitle');
+  const panicFill = document.getElementById('panicFill');
+  const panicStatus = document.getElementById('panicStatus');
+  const mainContent = document.getElementById('mainContent');
+  const gameOver = document.getElementById('gameOver');
+  const emojiRain = document.getElementById('emojiRain');
+
+  let subtitleIndex = 0;
+
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = DEADLINE - now;
+
+    if (diff <= 0) {
+      mainContent.style.display = 'none';
+      gameOver.style.display = 'flex';
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    daysEl.textContent = days;
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(minutes);
+    secondsEl.textContent = pad(seconds);
+
+    // Screen shake on tick
+    document.body.classList.add('shake');
+    setTimeout(() => document.body.classList.remove('shake'), 150);
+
+    // Panic meter
+    const elapsed = now - PANIC_START;
+    const panicPercent = Math.min(100, Math.max(0, (elapsed / PANIC_TOTAL) * 100));
+    panicFill.style.width = panicPercent + '%';
+
+    let status = panicLevels[panicLevels.length - 1];
+    for (const level of panicLevels) {
+      if (panicPercent <= level.max) {
+        status = level;
+        break;
+      }
+    }
+    panicStatus.textContent = 'Panic Level: ' + status.label;
+  }
+
+  function rotateSubtitle() {
+    subtitleEl.classList.add('fade');
+    setTimeout(() => {
+      subtitleIndex = (subtitleIndex + 1) % subtitleMessages.length;
+      subtitleEl.textContent = subtitleMessages[subtitleIndex];
+      subtitleEl.classList.remove('fade');
+    }, 300);
+  }
+
+  function spawnEmoji() {
+    const el = document.createElement('div');
+    el.classList.add('falling-emoji');
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (1.2 + Math.random() * 2) + 'rem';
+    const duration = 5 + Math.random() * 8;
+    el.style.animationDuration = duration + 's';
+    el.style.animationDelay = '0s';
+    emojiRain.appendChild(el);
+    setTimeout(() => el.remove(), duration * 1000);
+  }
+
+  // Init
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  setInterval(rotateSubtitle, 3500);
+
+  // Spawn emojis periodically
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => spawnEmoji(), i * 600);
+  }
+  setInterval(spawnEmoji, 1200);
+</script>
+
+</body>
+</html>
