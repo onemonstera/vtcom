@@ -189,7 +189,7 @@
       document.getElementById('misc').innerHTML = d.misc
         .map(m => `<div class="fun-fact">${m}</div>`).join('');
       document.getElementById('contact').innerHTML =
-        `Say hi: <a href="${d.contact.email}">email</a> · <a href="${d.contact.linkedin}">LinkedIn</a>`;
+        `Say hi: <a href="mailto:${d.contact.email}">${d.contact.email}</a> · <a href="${d.contact.linkedin}">LinkedIn</a>`;
     });
 </script>
 

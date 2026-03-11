@@ -164,7 +164,7 @@
       document.getElementById('currently').innerHTML = d.currently
         .map(c => `→ ${c}`).join('<br>');
       document.getElementById('contact').innerHTML =
-        `<a href="${d.contact.email}" style="color:#a09af8">email</a> &nbsp;·&nbsp; <a href="${d.contact.linkedin}" style="color:#a09af8">LinkedIn</a>`;
+        `<a href="mailto:${d.contact.email}" style="color:#a09af8">${d.contact.email}</a> &nbsp;·&nbsp; <a href="${d.contact.linkedin}" style="color:#a09af8">LinkedIn</a>`;
     });
 </script>
 

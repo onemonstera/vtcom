@@ -133,7 +133,7 @@
       document.getElementById('currently').innerHTML = d.currently
         .map(c => `<li>${c}</li>`).join('');
       document.getElementById('contact').innerHTML =
-        `Get in touch: <a href="${d.contact.email}">email</a> · <a href="${d.contact.linkedin}">LinkedIn</a>`;
+        `Get in touch: <a href="mailto:${d.contact.email}">${d.contact.email}</a> · <a href="${d.contact.linkedin}">LinkedIn</a>`;
     });
 </script>
 
