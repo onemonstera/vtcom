@@ -745,7 +745,10 @@
     // Update page title and header
     const titleEl = document.querySelector('.page-title');
     if (titleEl) titleEl.textContent = tab === 'aurora' ? 'Alaska Aurora' : 'Alaska Weather';
-    document.title = (tab === 'aurora' ? 'Aurora' : 'Weather') + ' — vinhtrinh.com';
+    // Safari sometimes doesn't visually update the tab title — setting it twice with a delay forces a repaint
+    const newTitle = (tab === 'aurora' ? 'Aurora' : 'Weather') + ' — vinhtrinh.com';
+    document.title = newTitle;
+    setTimeout(() => { document.title = newTitle; }, 100);
     // Highlight correct nav link
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     const navTarget = tab === 'aurora' ? 'weather.html#aurora' : 'weather.html#weather';
