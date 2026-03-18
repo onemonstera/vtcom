@@ -34,16 +34,6 @@
     margin-bottom: 0.5rem;
   }
 
-  .why-note {
-    display: inline-block;
-    font-size: 0.75rem;
-    color: #6c63ff;
-    border: 1px solid rgba(108,99,255,0.25);
-    border-radius: 50px;
-    padding: 0.15rem 0.6rem;
-    margin-top: 0.25rem;
-  }
-
   /* City filter chips */
   .city-filter {
     display: flex;
@@ -308,85 +298,6 @@
   /* === AURORA SECTION === */
   .aurora-section { margin-bottom: 2rem; }
 
-  .aurora-day {
-    margin-bottom: 1.5rem;
-  }
-
-  .aurora-day-header {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #e8e8f0;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .kp-badge {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.6rem;
-    border-radius: 50px;
-    font-weight: 600;
-  }
-
-  .kp-low { background: rgba(100,100,120,0.2); color: #8a8aaa; border: 1px solid rgba(100,100,120,0.3); }
-  .kp-moderate { background: rgba(200,180,0,0.12); color: #d4c030; border: 1px solid rgba(200,180,0,0.25); }
-  .kp-good { background: rgba(0,200,100,0.12); color: #4caf80; border: 1px solid rgba(0,200,100,0.25); }
-  .kp-excellent { background: rgba(160,80,255,0.15); color: #b07af5; border: 1px solid rgba(160,80,255,0.3); }
-  .kp-unknown { background: rgba(100,100,120,0.1); color: #5a5a7a; border: 1px solid rgba(100,100,120,0.15); }
-
-  .aurora-cities {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .aurora-city-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 1rem;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(108,99,255,0.08);
-    border-radius: 8px;
-    flex-wrap: wrap;
-  }
-
-  .aurora-city-row:hover {
-    border-color: rgba(108,99,255,0.2);
-  }
-
-  .aurora-city-row.best-viewing {
-    border-left: 3px solid rgba(0,200,100,0.5);
-    background: rgba(0,200,100,0.04);
-  }
-
-  .aurora-city-name {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #c8c8e0;
-    width: 6.5rem;
-    flex-shrink: 0;
-  }
-
-  .aurora-cloud {
-    font-size: 0.78rem;
-    color: #8a8aaa;
-    width: 6rem;
-    flex-shrink: 0;
-  }
-
-  .aurora-cloud.clear { color: #4caf80; }
-  .aurora-cloud.cloudy { color: #d4aa30; }
-  .aurora-cloud.overcast { color: #8a6a6a; }
-
-  .aurora-stars {
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    flex-shrink: 0;
-  }
-
   .star-filled { color: #4caf80; }
   .star-empty { color: #3a3a5a; }
 
@@ -395,21 +306,6 @@
   .stars-decent .star-filled { color: #d4aa30; }
   .stars-faint .star-filled { color: #6a6a8a; }
   .stars-none .star-filled, .stars-none .star-empty { color: #3a3a5a; }
-
-  .aurora-rating {
-    font-size: 0.75rem;
-    color: #8a8aaa;
-  }
-
-  .aurora-rating.great { color: #4caf80; }
-  .aurora-rating.decent { color: #d4c030; }
-  .aurora-rating.poor { color: #8a6a6a; }
-
-  .best-viewing-label {
-    font-size: 0.65rem;
-    color: #4caf80;
-    margin-left: 0.5rem;
-  }
 
   .aurora-note {
     font-size: 0.72rem;
@@ -458,11 +354,6 @@
     flex-wrap: wrap;
   }
 
-  .ovation-row.best-viewing {
-    background: rgba(0,200,100,0.04);
-    border-left: 3px solid rgba(0,200,100,0.5);
-  }
-
   .ovation-city {
     font-size: 0.82rem;
     font-weight: 600;
@@ -486,26 +377,6 @@
 
   .ovation-seg.filled { background: #4caf80; }
   .ovation-seg.filled.high { background: #b07af5; }
-
-  .ovation-val {
-    font-size: 0.82rem;
-    color: #c8c8e0;
-    font-weight: 700;
-    width: 2rem;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .ovation-label {
-    font-size: 0.78rem;
-    color: #8a8aaa;
-  }
-
-  .ovation-label.level-none { color: #5a5a7a; }
-  .ovation-label.level-low { color: #8a8aaa; }
-  .ovation-label.level-moderate { color: #d4c030; }
-  .ovation-label.level-high { color: #4caf80; }
-  .ovation-label.level-very-high { color: #b07af5; }
 
   .outlook-separator {
     font-size: 0.72rem;
@@ -665,8 +536,6 @@
     .day-city-condition { width: auto; }
     .ovation-city { width: 5rem; }
     .day-city-precip { margin-left: 0; }
-    .aurora-city-name { width: 5rem; }
-    .aurora-cloud { width: auto; }
     .aurora-detail-panel { overflow-x: auto; }
     .aurora-grid th { padding: 0.3rem; font-size: 0.6rem; }
     .aurora-grid td { padding: 0.3rem; font-size: 0.75rem; }
@@ -913,14 +782,6 @@
   // --- OVATION real-time aurora ---
   const OVATION_MAX = 20; // practical max for OVATION intensity
 
-  function getIntensityLabel(val) {
-    if (val <= 0) return { label: 'None', css: 'level-none' };
-    if (val <= 3) return { label: 'Low', css: 'level-low' };
-    if (val <= 6) return { label: 'Moderate', css: 'level-moderate' };
-    if (val <= 10) return { label: 'High', css: 'level-high' };
-    return { label: 'Very High', css: 'level-very-high' };
-  }
-
   function renderBar(intensity) {
     // Map 0-20 to 0-10 blocks
     const filled = Math.min(Math.round(intensity / OVATION_MAX * 10), 10);
@@ -998,14 +859,6 @@
     if (combined >= 5) return { stars: 3, label: 'Excellent', css: 'great' };
     if (combined >= 3) return { stars: 2, label: 'Possible', css: 'decent' };
     return { stars: 1, label: 'Faint chance', css: 'poor' };
-  }
-
-  function renderStars(n) {
-    let s = '';
-    for (let i = 0; i < 3; i++) {
-      s += `<span class="${i < n ? 'star-filled' : 'star-empty'}">★</span>`;
-    }
-    return s;
   }
 
   // Kp bar: 0-9 scale with color-coded marker
