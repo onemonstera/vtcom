@@ -483,6 +483,59 @@
     margin: 2rem 0 1rem;
   }
 
+  /* Aurora grid table */
+  .aurora-grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .aurora-grid th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6a6a8a;
+    font-weight: 600;
+    padding: 0.4rem 0.5rem 0.6rem;
+    text-align: center;
+  }
+
+  .aurora-grid th:first-child { text-align: left; }
+
+  .aurora-grid td {
+    padding: 0.5rem;
+    text-align: center;
+    border-top: 1px solid rgba(108,99,255,0.08);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .aurora-grid td:first-child {
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #c8c8e0;
+    white-space: nowrap;
+  }
+
+  .aurora-grid .cell-cloud { font-size: 1.1rem; display: block; }
+  .aurora-grid .cell-stars { letter-spacing: 1px; display: block; margin-top: 2px; }
+
+  .aurora-grid .cell-best .cell-stars { color: #4caf80; }
+  .aurora-grid td.cell-best {
+    background: rgba(0,200,100,0.06);
+    border-radius: 6px;
+  }
+
+  .aurora-grid .kp-row td {
+    font-size: 0.68rem;
+    color: #6a6a8a;
+    border-top: 1px solid rgba(108,99,255,0.12);
+    padding-top: 0.6rem;
+  }
+
+  .aurora-grid .kp-row td:first-child { color: #6c63ff; }
+
   /* Responsive */
   @media (max-width: 768px) {
     .city-grid { grid-template-columns: 1fr; }
@@ -946,56 +999,76 @@
         </div>
       `;
 
-      // ========== AURORA SECTION ==========
-      const auroraDays = [];
-      for (let d = 0; d < numDays; d++) {
+      // ========== AURORA 3-DAY GRID ==========
+      function cloudIcon(pct) {
+        if (pct <= 20) return '<span style="opacity:0.5">○</span>';       // clear
+        if (pct <= 50) return '<span style="opacity:0.6">◔</span>';       // partly cloudy
+        if (pct <= 80) return '<span style="opacity:0.7">◑</span>';       // mostly cloudy
+        return '<span style="opacity:0.8">●</span>';                       // overcast
+      }
+
+      const auroraGridDays = Math.min(numDays, 3);
+
+      // Build per-day data
+      const gridData = [];
+      for (let d = 0; d < auroraGridDays; d++) {
         const dateKey = results[0].data.time[d];
         const kpVal = kpData ? (kpData[dateKey] ?? null) : null;
         const kpLevel = getKpLevel(kpVal);
 
-        // Per-city aurora data
-        const cityRows = results.map((city, cityIdx) => {
+        const cities = results.map((city, idx) => {
           const cloudPct = city.data.cloud[d] ?? 50;
           const cloud = getCloudLabel(cloudPct);
           const view = kpVal !== null
             ? getViewability(kpLevel.score, cloud.score)
             : { stars: 0, label: cloud.score >= 2 ? 'Clear skies (Kp unknown)' : 'Cloudy (Kp unknown)', css: 'poor' };
-          return { cityIdx, name: city.name, cloud, view, cloudPct };
+          return { name: city.name, cloudPct, cloud, view };
         });
 
-        // Best viewing = highest viewability stars, break ties by lowest cloud %
+        // Find best city per day
         let bestIdx = 0;
-        for (let c = 1; c < cityRows.length; c++) {
-          const curr = cityRows[c], best = cityRows[bestIdx];
-          if (curr.view.stars > best.view.stars ||
-              (curr.view.stars === best.view.stars && curr.cloudPct < best.cloudPct)) {
+        for (let c = 1; c < cities.length; c++) {
+          if (cities[c].view.stars > cities[bestIdx].view.stars ||
+              (cities[c].view.stars === cities[bestIdx].view.stars && cities[c].cloudPct < cities[bestIdx].cloudPct)) {
             bestIdx = c;
           }
         }
 
-        const rows = cityRows.map((row, idx) => {
-          const isBest = idx === bestIdx && row.view.stars > 0;
-          return `
-            <div class="aurora-city-row ${isBest ? 'best-viewing' : ''}">
-              <span class="aurora-city-name">${row.name}${isBest ? '<span class="best-viewing-label">✦ best viewing</span>' : ''}</span>
-              <span class="aurora-cloud ${row.cloud.css}">${row.cloud.label}</span>
-              <span class="aurora-stars">${renderStars(row.view.stars)}</span>
-              <span class="aurora-rating ${row.view.css}">${row.view.label}</span>
-            </div>
-          `;
-        }).join('');
-
-        auroraDays.push(`
-          <div class="aurora-day">
-            <div class="aurora-day-header">
-              ${formatDayLong(dateKey, d)}
-              <span class="day-date">${formatDate(dateKey)}</span>
-              <span class="kp-badge ${kpLevel.css}">${kpLevel.label}</span>
-            </div>
-            <div class="aurora-cities">${rows}</div>
-          </div>
-        `);
+        gridData.push({ dateKey, kpVal, kpLevel, cities, bestIdx });
       }
+
+      // Header row: empty cell + day columns
+      const headerCells = gridData.map(day =>
+        `<th>${formatDay(day.dateKey, 0)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span></th>`
+      ).join('');
+
+      // City rows
+      const cityRowsHTML = results.map((city, cityIdx) => {
+        const cells = gridData.map(day => {
+          const c = day.cities[cityIdx];
+          const isBest = cityIdx === day.bestIdx && c.view.stars > 0;
+          return `<td class="${isBest ? 'cell-best' : ''}">
+            <span class="cell-cloud">${cloudIcon(c.cloudPct)}</span>
+            <span class="cell-stars">${renderStars(c.view.stars)}</span>
+          </td>`;
+        }).join('');
+        return `<tr><td>${city.name}</td>${cells}</tr>`;
+      }).join('');
+
+      // Kp row at bottom
+      const kpCells = gridData.map(day =>
+        `<td>Kp ${day.kpVal !== null ? day.kpVal.toFixed(1) : '—'}</td>`
+      ).join('');
+
+      const auroraGridHTML = `
+        <table class="aurora-grid">
+          <thead><tr><th></th>${headerCells}</tr></thead>
+          <tbody>
+            ${cityRowsHTML}
+            <tr class="kp-row"><td>Kp index</td>${kpCells}</tr>
+          </tbody>
+        </table>
+      `;
 
       const kpNote = kpData
         ? 'Kp index averaged from nighttime hours (8PM–6AM AKDT). Higher Kp = stronger aurora.'
@@ -1050,8 +1123,8 @@
       auroraContainer.innerHTML = `
         <div class="aurora-section">
           ${ovationHTML}
-          <div class="outlook-separator">// 5-day outlook (Kp-based)</div>
-          ${auroraDays.join('')}
+          <div class="outlook-separator">// 3-day outlook (Kp-based)</div>
+          ${auroraGridHTML}
           <div class="aurora-note">${kpNote}</div>
         </div>
       `;
