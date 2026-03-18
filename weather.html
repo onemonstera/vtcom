@@ -536,6 +536,49 @@
 
   .aurora-grid .kp-row td:first-child { color: #6c63ff; }
 
+  .aurora-grid th[data-day] {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .aurora-grid th[data-day]:hover { color: #c8c8e0; }
+  .aurora-grid th[data-day] .chevron {
+    font-size: 0.55rem;
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+  .aurora-grid th[data-day].expanded .chevron { transform: rotate(90deg); }
+
+  .aurora-detail-panel {
+    margin-top: 1rem;
+    background: rgba(108, 99, 255, 0.04);
+    border: 1px solid rgba(108, 99, 255, 0.15);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    animation: fadeSlide 0.2s ease;
+  }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .aurora-detail-panel .detail-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #e8e8f0;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .aurora-detail-panel .detail-close {
+    cursor: pointer;
+    color: #6a6a8a;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.4rem;
+  }
+  .aurora-detail-panel .detail-close:hover { color: #e8e8f0; }
+  .aurora-detail-grid { margin-top: 0; }
+
   .aurora-legend {
     display: flex;
     flex-wrap: wrap;
@@ -556,6 +599,7 @@
     .day-city-precip { margin-left: 0; }
     .aurora-city-name { width: 5rem; }
     .aurora-cloud { width: auto; }
+    .aurora-detail-panel { overflow-x: auto; }
   }
 </style>
 </head>
@@ -843,39 +887,120 @@
       if (!res.ok) return null;
       const data = await res.json();
 
-      // Group by date (Alaska time = UTC-9 standard, UTC-8 daylight)
-      // Use nighttime hours (UTC 04:00-14:00 = ~8PM-6AM AKDT) for aurora relevance
+      // Group by Alaska date. AKDT = UTC-8
+      // Nighttime hours for aurora: local 8PM-6AM = UTC 04:00-14:00
       const byDay = {};
       for (const entry of data) {
         const ts = entry[0]; // "2026-03-18 03:00:00"
         const kp = parseFloat(entry[1]);
         if (isNaN(kp)) continue;
 
-        // Parse as UTC, convert to Alaska date
         const utcDate = new Date(ts + 'Z');
-        const akHour = new Date(utcDate.getTime() - 8 * 3600000); // AKDT = UTC-8
+        const akHour = new Date(utcDate.getTime() - 8 * 3600000);
         const dateKey = akHour.toISOString().slice(0, 10);
 
-        // Prefer nighttime hours (local 8PM-6AM = utcHour 4-14 roughly)
         const utcHour = utcDate.getUTCHours();
         const isNight = utcHour >= 4 && utcHour <= 14;
 
-        if (!byDay[dateKey]) byDay[dateKey] = { all: [], night: [] };
+        if (!byDay[dateKey]) byDay[dateKey] = { all: [], night: [], windows: [] };
         byDay[dateKey].all.push(kp);
-        if (isNight) byDay[dateKey].night.push(kp);
+        if (isNight) {
+          byDay[dateKey].night.push(kp);
+          // Convert UTC window to Alaska local time label
+          const akStart = new Date(utcDate.getTime() - 8 * 3600000);
+          const akEnd = new Date(akStart.getTime() + 3 * 3600000);
+          const fmt = h => { const hr = h.getUTCHours(); const ampm = hr >= 12 ? 'PM' : 'AM'; const h12 = hr % 12 || 12; return h12 + ampm; };
+          byDay[dateKey].windows.push({
+            utcStart: ts,
+            kp,
+            label: fmt(akStart) + '–' + fmt(akEnd),
+          });
+        }
       }
 
-      // Average per day, prefer nighttime values
+      // Result: avg + windows per day
       const result = {};
       for (const [date, vals] of Object.entries(byDay)) {
         const arr = vals.night.length > 0 ? vals.night : vals.all;
-        result[date] = arr.reduce((a, b) => a + b, 0) / arr.length;
+        result[date] = {
+          avg: arr.reduce((a, b) => a + b, 0) / arr.length,
+          windows: vals.windows,
+        };
       }
       setCache('vtcom_kp', result);
       return result;
     } catch {
       return null;
     }
+  }
+
+  async function fetchHourlyCloud() {
+    const cached = getCache('vtcom_hourly_cloud');
+    if (cached) return cached.data;
+
+    try {
+      const fetches = CITIES.map(city => {
+        const url = 'https://api.open-meteo.com/v1/forecast'
+          + `?latitude=${city.lat}&longitude=${city.lon}`
+          + '&hourly=cloud_cover'
+          + '&timezone=America%2FAnchorage'
+          + '&forecast_days=5';
+        return fetch(url).then(r => {
+          if (!r.ok) throw new Error('API error');
+          return r.json();
+        });
+      });
+      const result = await Promise.all(fetches);
+      setCache('vtcom_hourly_cloud', result);
+      return result;
+    } catch {
+      return null;
+    }
+  }
+
+  // Get nighttime (8PM-6AM) average cloud cover for a given date
+  function getNighttimeCloudAvg(hourlyData, dateKey) {
+    if (!hourlyData) return null;
+    const times = hourlyData.hourly.time;
+    const clouds = hourlyData.hourly.cloud_cover;
+    const vals = [];
+    for (let i = 0; i < times.length; i++) {
+      const t = times[i]; // "2026-03-18T20:00"
+      const d = t.slice(0, 10);
+      const h = parseInt(t.slice(11, 13));
+      // Night = 8PM-11PM on dateKey, or 12AM-6AM on the day after
+      const nextDay = new Date(dateKey + 'T12:00:00');
+      nextDay.setDate(nextDay.getDate() + 1);
+      const nextDayKey = nextDay.toISOString().slice(0, 10);
+      if ((d === dateKey && h >= 20) || (d === nextDayKey && h < 6)) {
+        vals.push(clouds[i]);
+      }
+    }
+    return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+  }
+
+  // Get cloud cover for a specific 3-hour UTC window from hourly data
+  // Open-Meteo hourly times are in Alaska local time; NOAA utcStart is UTC
+  function getCloudFor3hrWindow(hourlyData, utcStart) {
+    if (!hourlyData) return null;
+    const times = hourlyData.hourly.time;
+    const clouds = hourlyData.hourly.cloud_cover;
+    // Convert UTC window start to Alaska local time (AKDT = UTC-8)
+    const utcMs = new Date(utcStart + 'Z').getTime();
+    const vals = [];
+    for (let offset = 0; offset < 3; offset++) {
+      const akMs = utcMs + offset * 3600000 - 8 * 3600000;
+      const akDate = new Date(akMs);
+      // Build AK local time string to match Open-Meteo format "2026-03-18T20:00"
+      const y = akDate.getUTCFullYear();
+      const m = String(akDate.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(akDate.getUTCDate()).padStart(2, '0');
+      const h = String(akDate.getUTCHours()).padStart(2, '0');
+      const akStr = `${y}-${m}-${d}T${h}:00`;
+      const idx = times.indexOf(akStr);
+      if (idx !== -1) vals.push(clouds[idx]);
+    }
+    return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
   }
 
   // --- Fetch & render ---
@@ -910,10 +1035,11 @@
         setCache('vtcom_weather', allData);
       }
 
-      // Fetch Kp + OVATION (both have their own caching)
-      const [kpData, ovationData] = await Promise.all([
+      // Fetch Kp + OVATION + hourly cloud (all have their own caching)
+      const [kpData, ovationData, hourlyCloudData] = await Promise.all([
         fetchKpForecast(),
-        fetchOvation()
+        fetchOvation(),
+        fetchHourlyCloud()
       ]);
 
       const results = allData.map((data, i) => ({
@@ -1019,15 +1145,19 @@
 
       const auroraGridDays = Math.min(numDays, 3);
 
-      // Build per-day data
+      // Build per-day data using nighttime cloud averages
       const gridData = [];
       for (let d = 0; d < auroraGridDays; d++) {
         const dateKey = results[0].data.time[d];
-        const kpVal = kpData ? (kpData[dateKey] ?? null) : null;
+        const kpEntry = kpData ? (kpData[dateKey] ?? null) : null;
+        const kpVal = kpEntry ? kpEntry.avg : null;
+        const kpWindows = kpEntry ? kpEntry.windows : [];
         const kpLevel = getKpLevel(kpVal);
 
         const cities = results.map((city, idx) => {
-          const cloudPct = city.data.cloud[d] ?? 50;
+          // Use nighttime avg from hourly data, fall back to daily mean
+          const nightCloud = hourlyCloudData ? getNighttimeCloudAvg(hourlyCloudData[idx], dateKey) : null;
+          const cloudPct = nightCloud !== null ? nightCloud : (city.data.cloud[d] ?? 50);
           const cloud = getCloudLabel(cloudPct);
           const view = kpVal !== null
             ? getViewability(kpLevel.score, cloud.score)
@@ -1044,12 +1174,12 @@
           }
         }
 
-        gridData.push({ dateKey, kpVal, kpLevel, cities, bestIdx });
+        gridData.push({ dateKey, kpVal, kpLevel, kpWindows, cities, bestIdx });
       }
 
-      // Header row: empty cell + day columns
+      // Header row: clickable day columns with chevron
       const headerCells = gridData.map((day, d) =>
-        `<th>${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span></th>`
+        `<th data-day="${d}">${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span> <span class="chevron">▸</span></th>`
       ).join('');
 
       // City rows
@@ -1140,12 +1270,85 @@
       auroraContainer.innerHTML = `
         <div class="aurora-section">
           ${ovationHTML}
-          <div class="outlook-separator">// 3-day outlook (Kp-based)</div>
+          <div class="outlook-separator">// 3-day outlook (Kp-based) <span style="font-size:0.65rem;color:#4a4a6a;font-style:italic;margin-left:0.5rem">nighttime cloud cover · tap a day for 3hr detail</span></div>
           ${auroraGridHTML}
+          <div id="auroraDetailPanel"></div>
           ${legendHTML}
           <div class="aurora-note">${kpNote}</div>
         </div>
       `;
+
+      // Wire up clickable day headers for 3-hour detail
+      let expandedDay = null;
+      document.querySelectorAll('.aurora-grid th[data-day]').forEach(th => {
+        th.addEventListener('click', () => {
+          const dayIdx = parseInt(th.dataset.day);
+          const panel = document.getElementById('auroraDetailPanel');
+
+          // Toggle off if same day clicked
+          if (expandedDay === dayIdx) {
+            panel.innerHTML = '';
+            expandedDay = null;
+            document.querySelectorAll('.aurora-grid th[data-day]').forEach(h => h.classList.remove('expanded'));
+            return;
+          }
+
+          expandedDay = dayIdx;
+          document.querySelectorAll('.aurora-grid th[data-day]').forEach(h => h.classList.remove('expanded'));
+          th.classList.add('expanded');
+
+          const day = gridData[dayIdx];
+          const windows = day.kpWindows;
+
+          if (!windows || windows.length === 0) {
+            panel.innerHTML = '<div class="aurora-detail-panel"><div class="detail-title">No 3-hour Kp data available for this night</div></div>';
+            return;
+          }
+
+          // Build detail table: time windows as columns, cities as rows
+          const winHeaders = windows.map(w => `<th>${w.label}</th>`).join('');
+          const winCityRows = results.map((city, cityIdx) => {
+            const cells = windows.map(w => {
+              const cloudPct = getCloudFor3hrWindow(hourlyCloudData ? hourlyCloudData[cityIdx] : null, w.utcStart);
+              const cPct = cloudPct !== null ? cloudPct : 50;
+              const cloud = getCloudLabel(cPct);
+              const kpLevel = getKpLevel(w.kp);
+              const view = getViewability(kpLevel.score, cloud.score);
+              // Find best cell in this window
+              return { html: '', cPct, view, kpLevel };
+            });
+
+            // Find best city in each window (done outside, but we highlight per-cell)
+            const cellsHTML = cells.map(c =>
+              `<td>
+                <span class="cell-cloud">${cloudIcon(c.cPct)}</span>
+                <span class="cell-stars">${renderStars(c.view.stars)}</span>
+              </td>`
+            ).join('');
+            return `<tr><td>${city.name}</td>${cellsHTML}</tr>`;
+          }).join('');
+
+          const kpRow = windows.map(w => `<td>Kp ${w.kp.toFixed(1)}</td>`).join('');
+
+          const dayLabel = dayIdx === 0 ? 'Tonight' : formatDayLong(day.dateKey, dayIdx) + ' night';
+
+          panel.innerHTML = `
+            <div class="aurora-detail-panel">
+              <div class="detail-title">
+                <span>${dayLabel} · 3-hour windows</span>
+                <span class="detail-close" onclick="document.getElementById('auroraDetailPanel').innerHTML='';document.querySelectorAll('.aurora-grid th[data-day]').forEach(h=>h.classList.remove('expanded'));">✕</span>
+              </div>
+              <table class="aurora-grid aurora-detail-grid">
+                <thead><tr><th></th>${winHeaders}</tr></thead>
+                <tbody>
+                  ${winCityRows}
+                  <tr class="kp-row"><td>Kp</td>${kpRow}</tr>
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+      });
 
       // Update footer with cache status
       const noteEl = document.getElementById('dataNote');
