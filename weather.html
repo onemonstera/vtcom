@@ -364,6 +364,12 @@
   .star-filled { color: #4caf80; }
   .star-empty { color: #3a3a5a; }
 
+  /* Color-coded star ratings */
+  .stars-great .star-filled { color: #4caf80; }
+  .stars-decent .star-filled { color: #d4aa30; }
+  .stars-faint .star-filled { color: #6a6a8a; }
+  .stars-none .star-filled, .stars-none .star-empty { color: #3a3a5a; }
+
   .aurora-rating {
     font-size: 0.75rem;
     color: #8a8aaa;
@@ -578,6 +584,7 @@
   }
   .aurora-detail-panel .detail-close:hover { color: #e8e8f0; }
   .aurora-detail-grid { margin-top: 0; }
+  .cell-kp { display: block; font-size: 0.65rem; color: #6a6a8a; margin-top: 1px; }
 
   .aurora-legend {
     display: flex;
@@ -876,6 +883,16 @@
       s += `<span class="${i < n ? 'star-filled' : 'star-empty'}">★</span>`;
     }
     return s;
+  }
+
+  // Color-coded stars: green (3), amber (2), muted (1), dim (0)
+  function renderStarsColored(n) {
+    const colorClass = n >= 3 ? 'stars-great' : n === 2 ? 'stars-decent' : n === 1 ? 'stars-faint' : 'stars-none';
+    let s = '';
+    for (let i = 0; i < 3; i++) {
+      s += `<span class="${i < n ? 'star-filled' : 'star-empty'}">★</span>`;
+    }
+    return `<span class="${colorClass}">${s}</span>`;
   }
 
   async function fetchKpForecast() {
@@ -1210,7 +1227,7 @@
           const isBest = cityIdx === day.bestIdx && c.view.stars > 0;
           return `<td class="${isBest ? 'cell-best' : ''}">
             <span class="cell-cloud">${cloudIcon(c.cloudPct)}</span>
-            <span class="cell-stars">${renderStars(c.view.stars)}</span>
+            <span class="cell-stars">${renderStarsColored(c.view.stars)}</span>
           </td>`;
         }).join('');
         return `<tr><td>${city.name}</td>${cells}</tr>`;
@@ -1238,7 +1255,7 @@
       const legendHTML = `
         <div class="aurora-legend">
           <span class="legend-group"><span style="opacity:0.5">○</span> Clear <span style="opacity:0.6">◔</span> Partly <span style="opacity:0.7">◑</span> Mostly <span style="opacity:0.8">●</span> Overcast</span>
-          <span class="legend-group"><span class="star-filled">★</span><span class="star-filled">★</span><span class="star-filled">★</span> Excellent <span class="star-filled">★</span><span class="star-filled">★</span><span class="star-empty">★</span> Possible <span class="star-filled">★</span><span class="star-empty">★</span><span class="star-empty">★</span> Faint</span>
+          <span class="legend-group"><span class="stars-great"><span class="star-filled">★★★</span></span> Excellent <span class="stars-decent"><span class="star-filled">★★</span><span class="star-empty">★</span></span> Possible <span class="stars-faint"><span class="star-filled">★</span><span class="star-empty">★★</span></span> Faint</span>
         </div>
       `;
 
@@ -1335,21 +1352,18 @@
               const cloud = getCloudLabel(cPct);
               const kpLevel = getKpLevel(w.kp);
               const view = getViewability(kpLevel.score, cloud.score);
-              // Find best cell in this window
-              return { html: '', cPct, view, kpLevel };
+              return { cPct, view, kpLevel, kp: w.kp };
             });
 
-            // Find best city in each window (done outside, but we highlight per-cell)
             const cellsHTML = cells.map(c =>
               `<td>
                 <span class="cell-cloud">${cloudIcon(c.cPct)}</span>
-                <span class="cell-stars">${renderStars(c.view.stars)}</span>
+                <span class="cell-kp">Kp ${c.kp.toFixed(1)}</span>
+                <span class="cell-stars">${renderStarsColored(c.view.stars)}</span>
               </td>`
             ).join('');
             return `<tr><td>${city.name}</td>${cellsHTML}</tr>`;
           }).join('');
-
-          const kpRow = windows.map(w => `<td>Kp ${w.kp.toFixed(1)}</td>`).join('');
 
           const dayLabel = dayIdx === 0 ? 'Tonight' : formatDayLong(day.dateKey, dayIdx) + ' night';
 
@@ -1363,7 +1377,6 @@
                 <thead><tr><th></th>${winHeaders}</tr></thead>
                 <tbody>
                   ${winCityRows}
-                  <tr class="kp-row"><td>Kp</td>${kpRow}</tr>
                 </tbody>
               </table>
             </div>
