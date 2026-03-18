@@ -386,12 +386,110 @@
     font-style: italic;
   }
 
+  /* Right Now card */
+  .ovation-card {
+    background: rgba(108, 99, 255, 0.05);
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .ovation-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .ovation-time {
+    font-size: 0.7rem;
+    color: #6a6a8a;
+    background: rgba(255,255,255,0.04);
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+  }
+
+  .ovation-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .ovation-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    flex-wrap: wrap;
+  }
+
+  .ovation-row.best-viewing {
+    background: rgba(0,200,100,0.04);
+    border-left: 3px solid rgba(0,200,100,0.5);
+  }
+
+  .ovation-city {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #c8c8e0;
+    width: 6.5rem;
+    flex-shrink: 0;
+  }
+
+  .ovation-bar {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .ovation-seg {
+    width: 12px;
+    height: 16px;
+    border-radius: 2px;
+    background: #2a2a4a;
+  }
+
+  .ovation-seg.filled { background: #4caf80; }
+  .ovation-seg.filled.high { background: #b07af5; }
+
+  .ovation-val {
+    font-size: 0.82rem;
+    color: #c8c8e0;
+    font-weight: 700;
+    width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .ovation-label {
+    font-size: 0.78rem;
+    color: #8a8aaa;
+  }
+
+  .ovation-label.level-none { color: #5a5a7a; }
+  .ovation-label.level-low { color: #8a8aaa; }
+  .ovation-label.level-moderate { color: #d4c030; }
+  .ovation-label.level-high { color: #4caf80; }
+  .ovation-label.level-very-high { color: #b07af5; }
+
+  .outlook-separator {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin: 2rem 0 1rem;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .city-grid { grid-template-columns: 1fr; }
     .day-city-row { gap: 0.5rem; }
     .day-city-name { width: 5rem; }
     .day-city-condition { width: auto; }
+    .ovation-city { width: 5rem; }
     .day-city-precip { margin-left: 0; }
     .aurora-city-name { width: 5rem; }
     .aurora-cloud { width: auto; }
@@ -576,6 +674,67 @@
 
   document.querySelector('.sub-toggle-btn[data-view="day"]').classList.add('active');
 
+  // --- OVATION real-time aurora ---
+  function getIntensityLabel(val) {
+    if (val <= 0) return { label: 'None', css: 'level-none' };
+    if (val <= 2) return { label: 'Low', css: 'level-low' };
+    if (val <= 4) return { label: 'Moderate', css: 'level-moderate' };
+    if (val <= 6) return { label: 'High', css: 'level-high' };
+    return { label: 'Very High', css: 'level-very-high' };
+  }
+
+  function renderBar(intensity) {
+    const segs = [];
+    const isHigh = intensity >= 7;
+    for (let i = 0; i < 8; i++) {
+      const filled = i < intensity;
+      segs.push(`<div class="ovation-seg${filled ? ' filled' : ''}${filled && isHigh ? ' high' : ''}"></div>`);
+    }
+    return segs.join('');
+  }
+
+  async function fetchOvation() {
+    const cached = getCache('vtcom_ovation');
+    if (cached) return cached.data;
+
+    try {
+      const res = await fetch('https://services.swpc.noaa.gov/json/ovation_aurora_latest.json');
+      if (!res.ok) return null;
+      const json = await res.json();
+
+      const coords = json.coordinates;
+      const forecastTime = json['Forecast Time'];
+
+      // For each city, find nearest grid point
+      // OVATION uses 0-360 longitude, our cities use negative west longitude
+      const cityResults = CITIES.map(city => {
+        const targetLon = city.lon < 0 ? city.lon + 360 : city.lon;
+        const targetLat = city.lat;
+
+        let bestDist = Infinity;
+        let bestIntensity = 0;
+
+        for (const [lon, lat, intensity] of coords) {
+          const dLon = Math.abs(lon - targetLon);
+          const dLat = Math.abs(lat - targetLat);
+          const dist = dLon * dLon + dLat * dLat;
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIntensity = intensity;
+          }
+        }
+
+        return { name: city.name, intensity: bestIntensity };
+      });
+
+      const result = { forecastTime, cities: cityResults };
+      setCache('vtcom_ovation', result);
+      return result;
+    } catch {
+      return null;
+    }
+  }
+
   // --- Aurora helpers ---
   function getKpLevel(kp) {
     if (kp === null) return { label: 'No forecast', css: 'kp-unknown', score: 0 };
@@ -685,8 +844,11 @@
         setCache('vtcom_weather', allData);
       }
 
-      // Fetch Kp (has its own caching)
-      const kpData = await fetchKpForecast();
+      // Fetch Kp + OVATION (both have their own caching)
+      const [kpData, ovationData] = await Promise.all([
+        fetchKpForecast(),
+        fetchOvation()
+      ]);
 
       const results = allData.map((data, i) => ({
         name: CITIES[i].name,
@@ -836,9 +998,56 @@
         ? 'Kp index averaged from nighttime hours (8PM–6AM AKDT). Higher Kp = stronger aurora.'
         : 'Kp data unavailable — cloud cover still shown for planning.';
 
+      // OVATION "Right Now" card
+      let ovationHTML = '';
+      if (ovationData) {
+        const fcTime = new Date(ovationData.forecastTime + 'Z');
+        const timeStr = fcTime.toLocaleTimeString('en-US', {
+          hour: 'numeric', minute: '2-digit',
+          timeZone: 'America/Anchorage', timeZoneName: 'short'
+        });
+
+        // Find best city (highest intensity, break ties by cloud cover today)
+        let bestOvIdx = 0;
+        for (let c = 1; c < ovationData.cities.length; c++) {
+          const curr = ovationData.cities[c], best = ovationData.cities[bestOvIdx];
+          if (curr.intensity > best.intensity ||
+              (curr.intensity === best.intensity &&
+               (results[c]?.data.cloud[0] ?? 50) < (results[bestOvIdx]?.data.cloud[0] ?? 50))) {
+            bestOvIdx = c;
+          }
+        }
+
+        const ovRows = ovationData.cities.map((c, idx) => {
+          const level = getIntensityLabel(c.intensity);
+          const isBest = idx === bestOvIdx && c.intensity > 0;
+          return `
+            <div class="ovation-row ${isBest ? 'best-viewing' : ''}">
+              <span class="ovation-city">${c.name}${isBest ? '<span class="best-viewing-label">✦ best viewing</span>' : ''}</span>
+              <div class="ovation-bar">${renderBar(c.intensity)}</div>
+              <span class="ovation-val">${c.intensity}/8</span>
+              <span class="ovation-label ${level.css}">${level.label}</span>
+            </div>
+          `;
+        }).join('');
+
+        ovationHTML = `
+          <div class="ovation-card">
+            <div class="ovation-header">
+              <div class="section-label" style="margin-bottom:0">// aurora right now</div>
+              <span class="ovation-time">as of ${timeStr}</span>
+            </div>
+            <div class="ovation-rows">${ovRows}</div>
+          </div>
+        `;
+      } else {
+        ovationHTML = '<div class="aurora-note" style="margin-bottom:2rem;">Real-time aurora data unavailable.</div>';
+      }
+
       auroraContainer.innerHTML = `
         <div class="aurora-section">
-          <div class="section-label">// aurora forecast</div>
+          ${ovationHTML}
+          <div class="outlook-separator">// 5-day outlook (Kp-based)</div>
           ${auroraDays.join('')}
           <div class="aurora-note">${kpNote}</div>
         </div>
