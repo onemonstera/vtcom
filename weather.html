@@ -543,13 +543,14 @@
 <script>
   // --- Cache ---
   const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+  const CACHE_TTL_SHORT = 15 * 60 * 1000; // 15 minutes (for real-time data)
 
-  function getCache(key) {
+  function getCache(key, ttl) {
     try {
       const raw = localStorage.getItem(key);
       if (!raw) return null;
       const { timestamp, data } = JSON.parse(raw);
-      if (Date.now() - timestamp > CACHE_TTL) return null;
+      if (Date.now() - timestamp > (ttl || CACHE_TTL)) return null;
       return { data, timestamp };
     } catch { return null; }
   }
@@ -694,7 +695,7 @@
   }
 
   async function fetchOvation() {
-    const cached = getCache('vtcom_ovation');
+    const cached = getCache('vtcom_ovation', CACHE_TTL_SHORT);
     if (cached) return cached.data;
 
     try {
@@ -1001,7 +1002,7 @@
       // OVATION "Right Now" card
       let ovationHTML = '';
       if (ovationData) {
-        const fcTime = new Date(ovationData.forecastTime + 'Z');
+        const fcTime = new Date(ovationData.forecastTime);
         const timeStr = fcTime.toLocaleTimeString('en-US', {
           hour: 'numeric', minute: '2-digit',
           timeZone: 'America/Anchorage', timeZoneName: 'short'
