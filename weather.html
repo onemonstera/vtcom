@@ -571,15 +571,24 @@
   .aurora-grid th[data-day] {
     cursor: pointer;
     user-select: none;
-    transition: color 0.2s;
+    transition: color 0.2s, border-color 0.2s;
+    border-bottom: 1px dashed rgba(108,99,255,0.3);
+    padding-bottom: 0.5rem;
   }
-  .aurora-grid th[data-day]:hover { color: #c8c8e0; }
+  .aurora-grid th[data-day]:hover {
+    color: #c8c8e0;
+    border-bottom-color: rgba(108,99,255,0.6);
+  }
   .aurora-grid th[data-day] .chevron {
-    font-size: 0.55rem;
-    display: inline-block;
+    font-size: 0.65rem;
+    display: block;
+    margin-top: 3px;
+    color: #6c63ff;
     transition: transform 0.2s;
+    opacity: 0.6;
   }
-  .aurora-grid th[data-day].expanded .chevron { transform: rotate(90deg); }
+  .aurora-grid th[data-day]:hover .chevron { opacity: 1; }
+  .aurora-grid th[data-day].expanded .chevron { transform: rotate(180deg); }
 
   .aurora-detail-panel {
     margin-top: 1rem;
@@ -1373,7 +1382,7 @@
 
       // Header row: clickable day columns with chevron
       const headerCells = gridData.map((day, d) =>
-        `<th data-day="${d}">${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span> <span class="chevron">▸</span></th>`
+        `<th data-day="${d}">${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span><span class="chevron">▾</span></th>`
       ).join('');
 
       // City rows
@@ -1451,7 +1460,7 @@
       auroraContainer.innerHTML = `
         <div class="aurora-section">
           ${ovationHTML}
-          <div class="outlook-separator">// 3-day outlook (Kp-based) <span style="font-size:0.65rem;color:#4a4a6a;font-style:italic;margin-left:0.5rem">nighttime cloud cover · tap a day for 3hr detail</span></div>
+          <div class="outlook-separator">// 3-day outlook (Kp-based)</div>
           ${auroraGridHTML}
           <div id="auroraDetailPanel"></div>
           ${legendHTML}
