@@ -917,10 +917,12 @@
     if (kp === null) return '<span class="kp-bar-label">Kp —</span>';
     const pct = Math.min(kp / 9 * 100, 100);
     let color;
-    if (kp < 2) color = '#4a4a6a';       // dim gray
-    else if (kp < 4) color = '#d4aa30';   // amber
-    else if (kp < 6) color = '#4caf80';   // green
-    else color = '#b07af5';               // purple
+    if (kp < 2) color = '#4caf80';        // green (quiet)
+    else if (kp < 4) color = '#a0c840';   // yellow-green (unsettled)
+    else if (kp < 5) color = '#d4aa30';   // yellow (active)
+    else if (kp < 6) color = '#e87830';   // orange (minor storm)
+    else if (kp < 7) color = '#e84040';   // red-orange (moderate storm)
+    else color = '#d42020';               // red (strong storm)
     return `<div class="kp-bar-wrap">
       <span class="kp-bar-label">Kp ${kp.toFixed(1)}</span>
       <div class="kp-bar-track">
