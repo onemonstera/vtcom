@@ -888,7 +888,13 @@
       const data = await res.json();
 
       // Group by Alaska date. AKDT = UTC-8
-      // Nighttime hours for aurora: local 8PM-6AM = UTC 04:00-14:00
+      // Nighttime for aurora: local 8PM-6AM
+      // Key insight: "tonight" for March 18 means 8PM Mar 18 – 6AM Mar 19
+      // In UTC: that's ~4AM Mar 19 – ~14:00 Mar 19 (AKDT = UTC-8)
+      // So we group nighttime windows by the EVENING date (AK local hour >= 20 → same date,
+      // AK local hour < 6 → previous date)
+      const fmt12 = h => { const hr = h.getUTCHours(); const ampm = hr >= 12 ? 'PM' : 'AM'; const h12 = hr % 12 || 12; return h12 + ampm; };
+
       const byDay = {};
       for (const entry of data) {
         const ts = entry[0]; // "2026-03-18 03:00:00"
@@ -896,32 +902,47 @@
         if (isNaN(kp)) continue;
 
         const utcDate = new Date(ts + 'Z');
-        const akHour = new Date(utcDate.getTime() - 8 * 3600000);
-        const dateKey = akHour.toISOString().slice(0, 10);
+        const akTime = new Date(utcDate.getTime() - 8 * 3600000);
+        const akDateKey = akTime.toISOString().slice(0, 10);
+        const akHour = akTime.getUTCHours();
 
-        const utcHour = utcDate.getUTCHours();
-        const isNight = utcHour >= 4 && utcHour <= 14;
+        // Determine if this is a nighttime window and which evening it belongs to
+        let isNight = false;
+        let eveningDateKey = akDateKey;
+        if (akHour >= 20) {
+          isNight = true;
+          eveningDateKey = akDateKey; // 8PM-11PM: same date
+        } else if (akHour < 6) {
+          isNight = true;
+          // 12AM-6AM: belongs to previous evening
+          const prevDay = new Date(akTime.getTime() - 24 * 3600000);
+          eveningDateKey = prevDay.toISOString().slice(0, 10);
+        }
 
-        if (!byDay[dateKey]) byDay[dateKey] = { all: [], night: [], windows: [] };
-        byDay[dateKey].all.push(kp);
+        // Always track by calendar date for the daily avg
+        if (!byDay[akDateKey]) byDay[akDateKey] = { all: [], night: [], windows: [] };
+        byDay[akDateKey].all.push(kp);
+
         if (isNight) {
-          byDay[dateKey].night.push(kp);
-          // Convert UTC window to Alaska local time label
-          const akStart = new Date(utcDate.getTime() - 8 * 3600000);
-          const akEnd = new Date(akStart.getTime() + 3 * 3600000);
-          const fmt = h => { const hr = h.getUTCHours(); const ampm = hr >= 12 ? 'PM' : 'AM'; const h12 = hr % 12 || 12; return h12 + ampm; };
-          byDay[dateKey].windows.push({
+          // Store nighttime Kp and window under the evening date
+          if (!byDay[eveningDateKey]) byDay[eveningDateKey] = { all: [], night: [], windows: [] };
+          byDay[eveningDateKey].night.push(kp);
+          const akStart = akTime;
+          const akEnd = new Date(akTime.getTime() + 3 * 3600000);
+          byDay[eveningDateKey].windows.push({
             utcStart: ts,
             kp,
-            label: fmt(akStart) + '–' + fmt(akEnd),
+            label: fmt12(akStart) + '–' + fmt12(akEnd),
+            sortHour: akHour >= 20 ? akHour : akHour + 24, // for sorting: 20,23,25(1AM),28(4AM)
           });
         }
       }
 
-      // Result: avg + windows per day
+      // Sort windows by evening order and compute averages
       const result = {};
       for (const [date, vals] of Object.entries(byDay)) {
         const arr = vals.night.length > 0 ? vals.night : vals.all;
+        vals.windows.sort((a, b) => a.sortHour - b.sortHour);
         result[date] = {
           avg: arr.reduce((a, b) => a + b, 0) / arr.length,
           windows: vals.windows,
