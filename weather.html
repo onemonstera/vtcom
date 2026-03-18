@@ -536,6 +536,16 @@
 
   .aurora-grid .kp-row td:first-child { color: #6c63ff; }
 
+  .aurora-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    color: #6a6a8a;
+  }
+  .aurora-legend .legend-group { display: flex; gap: 0.4rem; align-items: center; }
+
   /* Responsive */
   @media (max-width: 768px) {
     .city-grid { grid-template-columns: 1fr; }
@@ -1038,8 +1048,8 @@
       }
 
       // Header row: empty cell + day columns
-      const headerCells = gridData.map(day =>
-        `<th>${formatDay(day.dateKey, 0)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span></th>`
+      const headerCells = gridData.map((day, d) =>
+        `<th>${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span></th>`
       ).join('');
 
       // City rows
@@ -1073,6 +1083,13 @@
       const kpNote = kpData
         ? 'Kp index averaged from nighttime hours (8PM–6AM AKDT). Higher Kp = stronger aurora.'
         : 'Kp data unavailable — cloud cover still shown for planning.';
+
+      const legendHTML = `
+        <div class="aurora-legend">
+          <span class="legend-group"><span style="opacity:0.5">○</span> Clear <span style="opacity:0.6">◔</span> Partly <span style="opacity:0.7">◑</span> Mostly <span style="opacity:0.8">●</span> Overcast</span>
+          <span class="legend-group"><span class="star-filled">★</span><span class="star-filled">★</span><span class="star-filled">★</span> Excellent <span class="star-filled">★</span><span class="star-filled">★</span><span class="star-empty">★</span> Possible <span class="star-filled">★</span><span class="star-empty">★</span><span class="star-empty">★</span> Faint</span>
+        </div>
+      `;
 
       // OVATION "Right Now" card
       let ovationHTML = '';
@@ -1125,6 +1142,7 @@
           ${ovationHTML}
           <div class="outlook-separator">// 3-day outlook (Kp-based)</div>
           ${auroraGridHTML}
+          ${legendHTML}
           <div class="aurora-note">${kpNote}</div>
         </div>
       `;
