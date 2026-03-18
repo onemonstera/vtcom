@@ -280,12 +280,6 @@
   .data-note a { color: #6c63ff; text-decoration: none; }
 
   /* === AURORA SECTION === */
-  .aurora-divider {
-    border: none;
-    border-top: 1px solid rgba(108,99,255,0.15);
-    margin: 2.5rem 0 2rem;
-  }
-
   .aurora-section { margin-bottom: 2rem; }
 
   .aurora-day {
@@ -422,18 +416,25 @@
   </div>
 
   <div class="view-toggle">
-    <button class="toggle-btn" data-view="day">By Day</button>
-    <button class="toggle-btn" data-view="city">By City</button>
+    <button class="toggle-btn tab-btn" data-tab="weather">Weather</button>
+    <button class="toggle-btn tab-btn" data-tab="aurora">Aurora</button>
   </div>
 
-  <div id="weatherContent">
-    <div class="status-msg">fetching weather data...</div>
+  <div id="weatherTab" class="tab-content">
+    <div class="view-toggle" id="weatherSubToggle" style="margin-bottom:1.5rem;">
+      <button class="toggle-btn sub-toggle-btn" data-view="day">By Day</button>
+      <button class="toggle-btn sub-toggle-btn" data-view="city">By City</button>
+    </div>
+
+    <div id="weatherContent">
+      <div class="status-msg">fetching weather data...</div>
+    </div>
   </div>
 
-  <hr class="aurora-divider">
-
-  <div id="auroraContent">
-    <div class="status-msg">fetching aurora data...</div>
+  <div id="auroraTab" class="tab-content" style="display:none;">
+    <div id="auroraContent">
+      <div class="status-msg">fetching aurora data...</div>
+    </div>
   </div>
 
   <div class="data-note" id="dataNote">
@@ -545,21 +546,35 @@
     return bestIdx;
   }
 
-  // --- View toggle ---
+  // --- Tab toggle (Weather / Aurora) ---
+  let currentTab = 'weather';
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('weatherTab').style.display = currentTab === 'weather' ? 'block' : 'none';
+      document.getElementById('auroraTab').style.display = currentTab === 'aurora' ? 'block' : 'none';
+    });
+  });
+
+  document.querySelector('.tab-btn[data-tab="weather"]').classList.add('active');
+
+  // --- Weather sub-toggle (By Day / By City) ---
   let currentView = 'day';
 
-  document.querySelectorAll('.toggle-btn').forEach(btn => {
+  document.querySelectorAll('.sub-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentView = btn.dataset.view;
-      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sub-toggle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.querySelector('.view-city')?.classList.toggle('active', currentView === 'city');
       document.querySelector('.view-day')?.classList.toggle('active', currentView === 'day');
     });
   });
 
-  // Set default active
-  document.querySelector('.toggle-btn[data-view="day"]').classList.add('active');
+  document.querySelector('.sub-toggle-btn[data-view="day"]').classList.add('active');
 
   // --- Aurora helpers ---
   function getKpLevel(kp) {
