@@ -862,8 +862,9 @@
   }
 
   function getCloudLabel(pct) {
-    if (pct <= 20) return { label: `${Math.round(pct)}% Clear`, css: 'clear', score: 3 };
-    if (pct <= 50) return { label: `${Math.round(pct)}% Partly cloudy`, css: 'clear', score: 2 };
+    if (pct <= 10) return { label: `${Math.round(pct)}% Clear`, css: 'clear', score: 3 };
+    if (pct <= 30) return { label: `${Math.round(pct)}% Mostly clear`, css: 'clear', score: 3 };
+    if (pct <= 60) return { label: `${Math.round(pct)}% Partly cloudy`, css: 'clear', score: 2 };
     if (pct <= 80) return { label: `${Math.round(pct)}% Mostly cloudy`, css: 'cloudy', score: 1 };
     return { label: `${Math.round(pct)}% Overcast`, css: 'overcast', score: 0 };
   }
@@ -1179,17 +1180,20 @@
         const sz = 14, r = 5, cx = 7, cy = 7;
         const fill = '#8a8aaa', bg = '#2a2a4a';
         let fillEl;
-        if (pct <= 20) {
-          // Empty circle (clear)
+        if (pct <= 10) {
+          // Empty (clear)
           fillEl = '';
-        } else if (pct <= 50) {
-          // Quarter fill
+        } else if (pct <= 30) {
+          // Quarter fill (mostly clear)
           fillEl = `<path d="M${cx},${cy} L${cx},${cy-r} A${r},${r} 0 0,1 ${cx+r},${cy} Z" fill="${fill}"/>`;
+        } else if (pct <= 60) {
+          // Half fill (partly cloudy)
+          fillEl = `<path d="M${cx},${cy-r} A${r},${r} 0 0,1 ${cx},${cy+r} Z" fill="${fill}"/>`;
         } else if (pct <= 80) {
-          // Three-quarter fill
+          // Three-quarter fill (mostly cloudy)
           fillEl = `<path d="M${cx},${cy} L${cx},${cy-r} A${r},${r} 0 1,1 ${cx-r},${cy} Z" fill="${fill}"/>`;
         } else {
-          // Full circle (overcast)
+          // Full (overcast)
           fillEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`;
         }
         return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" style="vertical-align:middle"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${bg}" stroke="${fill}" stroke-width="1"/>${fillEl}</svg>`;
@@ -1268,7 +1272,7 @@
 
       const legendHTML = `
         <div class="aurora-legend">
-          <span class="legend-group">${cloudIcon(0)} Clear ${cloudIcon(40)} Partly ${cloudIcon(70)} Mostly ${cloudIcon(90)} Overcast</span>
+          <span class="legend-group">${cloudIcon(0)} Clear ${cloudIcon(20)} Mostly clear ${cloudIcon(45)} Partly cloudy ${cloudIcon(70)} Mostly cloudy ${cloudIcon(90)} Overcast</span>
           <span class="legend-group"><span class="stars-great"><span class="star-filled">★★★</span></span> Excellent <span class="stars-decent"><span class="star-filled">★★</span><span class="star-empty">★</span></span> Possible <span class="stars-faint"><span class="star-filled">★</span><span class="star-empty">★★</span></span> Faint</span>
         </div>
       `;
