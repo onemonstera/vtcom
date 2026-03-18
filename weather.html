@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather — vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    background: #0d0d1a;
+    color: #c8c8e0;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .weather-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .location {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 900;
+    color: #e8e8f0;
+    margin-bottom: 0.25rem;
+  }
+
+  .location-sub {
+    font-size: 0.85rem;
+    color: #6a6a8a;
+    margin-bottom: 0.5rem;
+  }
+
+  .why-note {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #6c63ff;
+    border: 1px solid rgba(108,99,255,0.25);
+    border-radius: 50px;
+    padding: 0.15rem 0.6rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Today card */
+  .today-card {
+    background: rgba(108, 99, 255, 0.07);
+    border: 1px solid rgba(108, 99, 255, 0.25);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .today-left {}
+
+  .today-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin-bottom: 0.5rem;
+  }
+
+  .today-condition {
+    font-size: 1rem;
+    color: #c8c8e0;
+    margin-bottom: 0.75rem;
+  }
+
+  .today-temps {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .temp-main {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #e8e8f0;
+    line-height: 1;
+  }
+
+  .temp-unit { font-size: 1.25rem; color: #6a6a8a; }
+
+  .temp-alt {
+    font-size: 1.1rem;
+    color: #6a6a8a;
+  }
+
+  .temp-divider { color: #3a3a5a; }
+
+  .today-right {
+    font-size: 5rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(108,99,255,0.3));
+  }
+
+  .today-meta {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #6a6a8a;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .today-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  /* 5-day forecast */
+  .section-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin-bottom: 1rem;
+  }
+
+  .forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .forecast-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(108,99,255,0.15);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .forecast-card:hover {
+    border-color: rgba(108,99,255,0.35);
+  }
+
+  .forecast-day {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6a6a8a;
+    margin-bottom: 0.6rem;
+  }
+
+  .forecast-emoji {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .forecast-condition {
+    font-size: 0.7rem;
+    color: #8a8aaa;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+
+  .forecast-temps {
+    font-size: 0.85rem;
+    color: #c8c8e0;
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .forecast-high { color: #e8e8f0; font-weight: 700; }
+  .forecast-low { color: #6a6a8a; }
+
+  .forecast-precip {
+    font-size: 0.68rem;
+    color: #6a6a8a;
+    margin-top: 0.4rem;
+  }
+
+  .forecast-precip.wet { color: #7ab8f5; }
+
+  /* Loading / error */
+  .status-msg {
+    color: #6a6a8a;
+    font-size: 0.9rem;
+    padding: 2rem 0;
+  }
+
+  .error-msg {
+    color: #f5827a;
+    font-size: 0.9rem;
+    padding: 1rem;
+    border: 1px solid rgba(245,130,122,0.2);
+    border-radius: 8px;
+  }
+
+  /* Footer note */
+  .data-note {
+    margin-top: 2rem;
+    font-size: 0.72rem;
+    color: #4a4a6a;
+    border-top: 1px solid rgba(108,99,255,0.1);
+    padding-top: 1rem;
+  }
+
+  @media (max-width: 500px) {
+    .today-card { flex-direction: column; }
+    .today-right { font-size: 4rem; }
+    .forecast-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="projects.html">Projects</a>
+  <a href="countdown.html">Countdown</a>
+  <a href="about.html">About</a>
+  <a href="weather.html" class="active">Weather</a>
+</nav>
+
+<div class="weather-page">
+  <div class="page-header">
+    <div class="location">Anchorage, AK</div>
+    <div class="location-sub">61.2181° N, 149.9003° W &nbsp;·&nbsp; Alaska Time</div>
+    <span class="why-note">no particular reason</span>
+  </div>
+
+  <div id="weatherContent">
+    <div class="status-msg">fetching weather data...</div>
+  </div>
+
+  <div class="data-note">
+    Weather data from <a href="https://open-meteo.com" target="_blank" style="color:#6c63ff;text-decoration:none;">Open-Meteo</a> · Updated on page load
+  </div>
+</div>
+
+<script>
+  const WMO = {
+    0:  { label: 'Clear sky',        emoji: '☀️' },
+    1:  { label: 'Mainly clear',     emoji: '🌤️' },
+    2:  { label: 'Partly cloudy',    emoji: '⛅' },
+    3:  { label: 'Overcast',         emoji: '☁️' },
+    45: { label: 'Foggy',            emoji: '🌫️' },
+    48: { label: 'Icy fog',          emoji: '🌫️' },
+    51: { label: 'Light drizzle',    emoji: '🌦️' },
+    53: { label: 'Drizzle',          emoji: '🌦️' },
+    55: { label: 'Heavy drizzle',    emoji: '🌧️' },
+    61: { label: 'Light rain',       emoji: '🌧️' },
+    63: { label: 'Rain',             emoji: '🌧️' },
+    65: { label: 'Heavy rain',       emoji: '🌧️' },
+    71: { label: 'Light snow',       emoji: '🌨️' },
+    73: { label: 'Snow',             emoji: '🌨️' },
+    75: { label: 'Heavy snow',       emoji: '❄️' },
+    77: { label: 'Snow grains',      emoji: '🌨️' },
+    80: { label: 'Light showers',    emoji: '🌦️' },
+    81: { label: 'Showers',          emoji: '🌧️' },
+    82: { label: 'Heavy showers',    emoji: '⛈️' },
+    85: { label: 'Snow showers',     emoji: '🌨️' },
+    86: { label: 'Heavy snow shower',emoji: '❄️' },
+    95: { label: 'Thunderstorm',     emoji: '⛈️' },
+    96: { label: 'Thunderstorm',     emoji: '⛈️' },
+    99: { label: 'Thunderstorm',     emoji: '⛈️' },
+  };
+
+  function getCondition(code) {
+    return WMO[code] || { label: 'Unknown', emoji: '🌡️' };
+  }
+
+  function cToF(c) { return Math.round(c * 9 / 5 + 32); }
+
+  function formatDay(dateStr, index) {
+    if (index === 0) return 'Today';
+    if (index === 1) return 'Tomorrow';
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'short' });
+  }
+
+  async function loadWeather() {
+    const container = document.getElementById('weatherContent');
+    try {
+      const url = 'https://api.open-meteo.com/v1/forecast'
+        + '?latitude=61.2181&longitude=-149.9003'
+        + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max'
+        + '&temperature_unit=celsius'
+        + '&timezone=America%2FAnchorage'
+        + '&forecast_days=5';
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      const { time, temperature_2m_max, temperature_2m_min, weathercode, precipitation_probability_max } = data.daily;
+
+      // Today card
+      const todayCond = getCondition(weathercode[0]);
+      const todayHighC = Math.round(temperature_2m_max[0]);
+      const todayLowC  = Math.round(temperature_2m_min[0]);
+      const todayHighF = cToF(todayHighC);
+      const todayLowF  = cToF(todayLowC);
+      const todayPrecip = precipitation_probability_max[0];
+
+      const todayHTML = `
+        <div class="today-card">
+          <div class="today-left">
+            <div class="today-label">// today</div>
+            <div class="today-condition">${todayCond.label}</div>
+            <div class="today-temps">
+              <span class="temp-main">${todayHighF}<span class="temp-unit">°F</span></span>
+              <span class="temp-divider">/</span>
+              <span class="temp-alt">${todayLowF}°F</span>
+            </div>
+            <div class="today-meta">
+              <span>🌡️ ${todayHighC}°C / ${todayLowC}°C</span>
+              <span>💧 ${todayPrecip}% precip</span>
+            </div>
+          </div>
+          <div class="today-right">${todayCond.emoji}</div>
+        </div>
+      `;
+
+      // 5-day grid
+      const forecastCards = time.map((dateStr, i) => {
+        const cond = getCondition(weathercode[i]);
+        const highC = Math.round(temperature_2m_max[i]);
+        const lowC  = Math.round(temperature_2m_min[i]);
+        const highF = cToF(highC);
+        const lowF  = cToF(lowC);
+        const precip = precipitation_probability_max[i];
+        return `
+          <div class="forecast-card">
+            <div class="forecast-day">${formatDay(dateStr, i)}</div>
+            <span class="forecast-emoji">${cond.emoji}</span>
+            <div class="forecast-condition">${cond.label}</div>
+            <div class="forecast-temps">
+              <span class="forecast-high">${highF}°F</span>
+              <span class="forecast-low">${lowF}°F</span>
+            </div>
+            <div class="forecast-temps" style="margin-top:0.2rem;font-size:0.75rem;">
+              <span style="color:#8a8aaa">${highC}°C / ${lowC}°C</span>
+            </div>
+            <div class="forecast-precip ${precip >= 40 ? 'wet' : ''}">💧 ${precip}%</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = todayHTML
+        + `<div class="section-label">// 5-day forecast</div>`
+        + `<div class="forecast-grid">${forecastCards}</div>`;
+
+    } catch (err) {
+      container.innerHTML = `<div class="error-msg">couldn't load weather data. try refreshing.</div>`;
+    }
+  }
+
+  loadWeather();
+</script>
+
+</body>
+</html>
