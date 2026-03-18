@@ -279,6 +279,119 @@
 
   .data-note a { color: #6c63ff; text-decoration: none; }
 
+  /* === AURORA SECTION === */
+  .aurora-divider {
+    border: none;
+    border-top: 1px solid rgba(108,99,255,0.15);
+    margin: 2.5rem 0 2rem;
+  }
+
+  .aurora-section { margin-bottom: 2rem; }
+
+  .aurora-day {
+    margin-bottom: 1.5rem;
+  }
+
+  .aurora-day-header {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e8e8f0;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .kp-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 50px;
+    font-weight: 600;
+  }
+
+  .kp-low { background: rgba(100,100,120,0.2); color: #8a8aaa; border: 1px solid rgba(100,100,120,0.3); }
+  .kp-moderate { background: rgba(200,180,0,0.12); color: #d4c030; border: 1px solid rgba(200,180,0,0.25); }
+  .kp-good { background: rgba(0,200,100,0.12); color: #4caf80; border: 1px solid rgba(0,200,100,0.25); }
+  .kp-excellent { background: rgba(160,80,255,0.15); color: #b07af5; border: 1px solid rgba(160,80,255,0.3); }
+  .kp-unknown { background: rgba(100,100,120,0.1); color: #5a5a7a; border: 1px solid rgba(100,100,120,0.15); }
+
+  .aurora-cities {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .aurora-city-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(108,99,255,0.08);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+
+  .aurora-city-row:hover {
+    border-color: rgba(108,99,255,0.2);
+  }
+
+  .aurora-city-row.best-viewing {
+    border-left: 3px solid rgba(0,200,100,0.5);
+    background: rgba(0,200,100,0.04);
+  }
+
+  .aurora-city-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #c8c8e0;
+    width: 6.5rem;
+    flex-shrink: 0;
+  }
+
+  .aurora-cloud {
+    font-size: 0.78rem;
+    color: #8a8aaa;
+    width: 6rem;
+    flex-shrink: 0;
+  }
+
+  .aurora-cloud.clear { color: #4caf80; }
+  .aurora-cloud.cloudy { color: #d4aa30; }
+  .aurora-cloud.overcast { color: #8a6a6a; }
+
+  .aurora-stars {
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+  }
+
+  .star-filled { color: #4caf80; }
+  .star-empty { color: #3a3a5a; }
+
+  .aurora-rating {
+    font-size: 0.75rem;
+    color: #8a8aaa;
+  }
+
+  .aurora-rating.great { color: #4caf80; }
+  .aurora-rating.decent { color: #d4c030; }
+  .aurora-rating.poor { color: #8a6a6a; }
+
+  .best-viewing-label {
+    font-size: 0.65rem;
+    color: #4caf80;
+    margin-left: 0.5rem;
+  }
+
+  .aurora-note {
+    font-size: 0.72rem;
+    color: #4a4a6a;
+    margin-top: 0.75rem;
+    font-style: italic;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .city-grid { grid-template-columns: 1fr; }
@@ -286,6 +399,8 @@
     .day-city-name { width: 5rem; }
     .day-city-condition { width: auto; }
     .day-city-precip { margin-left: 0; }
+    .aurora-city-name { width: 5rem; }
+    .aurora-cloud { width: auto; }
   }
 </style>
 </head>
@@ -315,8 +430,14 @@
     <div class="status-msg">fetching weather data...</div>
   </div>
 
+  <hr class="aurora-divider">
+
+  <div id="auroraContent">
+    <div class="status-msg">fetching aurora data...</div>
+  </div>
+
   <div class="data-note">
-    Weather data from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · Updated on page load
+    Weather from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · Aurora Kp from <a href="https://www.swpc.noaa.gov" target="_blank">NOAA SWPC</a> · Updated on page load
   </div>
 </div>
 
@@ -414,15 +535,89 @@
   // Set default active
   document.querySelector('.toggle-btn[data-view="day"]').classList.add('active');
 
+  // --- Aurora helpers ---
+  function getKpLevel(kp) {
+    if (kp === null) return { label: 'No forecast', css: 'kp-unknown', score: 0 };
+    if (kp < 2) return { label: `Kp ${kp.toFixed(1)} · Very low`, css: 'kp-low', score: 0 };
+    if (kp < 4) return { label: `Kp ${kp.toFixed(1)} · Moderate`, css: 'kp-moderate', score: 1 };
+    if (kp < 6) return { label: `Kp ${kp.toFixed(1)} · Good`, css: 'kp-good', score: 2 };
+    return { label: `Kp ${kp.toFixed(1)} · Excellent`, css: 'kp-excellent', score: 3 };
+  }
+
+  function getCloudLabel(pct) {
+    if (pct <= 20) return { label: `${Math.round(pct)}% Clear`, css: 'clear', score: 3 };
+    if (pct <= 50) return { label: `${Math.round(pct)}% Partly cloudy`, css: 'clear', score: 2 };
+    if (pct <= 80) return { label: `${Math.round(pct)}% Mostly cloudy`, css: 'cloudy', score: 1 };
+    return { label: `${Math.round(pct)}% Overcast`, css: 'overcast', score: 0 };
+  }
+
+  function getViewability(kpScore, cloudScore) {
+    if (kpScore === 0) return { stars: 0, label: 'Unlikely', css: 'poor' };
+    if (cloudScore === 0) return { stars: 0, label: 'Blocked by clouds', css: 'poor' };
+    const combined = kpScore + cloudScore; // 0-6
+    if (combined >= 5) return { stars: 3, label: 'Excellent', css: 'great' };
+    if (combined >= 3) return { stars: 2, label: 'Possible', css: 'decent' };
+    return { stars: 1, label: 'Faint chance', css: 'poor' };
+  }
+
+  function renderStars(n) {
+    let s = '';
+    for (let i = 0; i < 3; i++) {
+      s += `<span class="${i < n ? 'star-filled' : 'star-empty'}">★</span>`;
+    }
+    return s;
+  }
+
+  async function fetchKpForecast() {
+    try {
+      const res = await fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json');
+      if (!res.ok) return null;
+      const data = await res.json();
+
+      // Group by date (Alaska time = UTC-9 standard, UTC-8 daylight)
+      // Use nighttime hours (UTC 04:00-14:00 = ~8PM-6AM AKDT) for aurora relevance
+      const byDay = {};
+      for (const entry of data) {
+        const ts = entry[0]; // "2026-03-18 03:00:00"
+        const kp = parseFloat(entry[1]);
+        if (isNaN(kp)) continue;
+
+        // Parse as UTC, convert to Alaska date
+        const utcDate = new Date(ts + 'Z');
+        const akHour = new Date(utcDate.getTime() - 8 * 3600000); // AKDT = UTC-8
+        const dateKey = akHour.toISOString().slice(0, 10);
+
+        // Prefer nighttime hours (local 8PM-6AM = utcHour 4-14 roughly)
+        const utcHour = utcDate.getUTCHours();
+        const isNight = utcHour >= 4 && utcHour <= 14;
+
+        if (!byDay[dateKey]) byDay[dateKey] = { all: [], night: [] };
+        byDay[dateKey].all.push(kp);
+        if (isNight) byDay[dateKey].night.push(kp);
+      }
+
+      // Average per day, prefer nighttime values
+      const result = {};
+      for (const [date, vals] of Object.entries(byDay)) {
+        const arr = vals.night.length > 0 ? vals.night : vals.all;
+        result[date] = arr.reduce((a, b) => a + b, 0) / arr.length;
+      }
+      return result;
+    } catch {
+      return null;
+    }
+  }
+
   // --- Fetch & render ---
   async function loadWeather() {
     const container = document.getElementById('weatherContent');
+    const auroraContainer = document.getElementById('auroraContent');
 
     try {
       const fetches = CITIES.map(city => {
         const url = 'https://api.open-meteo.com/v1/forecast'
           + `?latitude=${city.lat}&longitude=${city.lon}`
-          + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max'
+          + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max,cloudcover_mean'
           + '&temperature_unit=celsius'
           + '&timezone=America%2FAnchorage'
           + '&forecast_days=5';
@@ -432,7 +627,11 @@
         });
       });
 
-      const allData = await Promise.all(fetches);
+      // Fetch weather + Kp in parallel
+      const [allData, kpData] = await Promise.all([
+        Promise.all(fetches),
+        fetchKpForecast()
+      ]);
 
       const results = allData.map((data, i) => ({
         name: CITIES[i].name,
@@ -443,6 +642,7 @@
           min: data.daily.temperature_2m_min,
           code: data.daily.weathercode,
           precip: data.daily.precipitation_probability_max,
+          cloud: data.daily.cloudcover_mean || [],
         }
       }));
 
@@ -526,8 +726,72 @@
         </div>
       `;
 
+      // ========== AURORA SECTION ==========
+      const auroraDays = [];
+      for (let d = 0; d < numDays; d++) {
+        const dateKey = results[0].data.time[d];
+        const kpVal = kpData ? (kpData[dateKey] ?? null) : null;
+        const kpLevel = getKpLevel(kpVal);
+
+        // Per-city aurora data
+        const cityRows = results.map((city, cityIdx) => {
+          const cloudPct = city.data.cloud[d] ?? 50;
+          const cloud = getCloudLabel(cloudPct);
+          const view = kpVal !== null
+            ? getViewability(kpLevel.score, cloud.score)
+            : { stars: 0, label: cloud.score >= 2 ? 'Clear skies (Kp unknown)' : 'Cloudy (Kp unknown)', css: 'poor' };
+          return { cityIdx, name: city.name, cloud, view, cloudPct };
+        });
+
+        // Best viewing = highest viewability stars, break ties by lowest cloud %
+        let bestIdx = 0;
+        for (let c = 1; c < cityRows.length; c++) {
+          const curr = cityRows[c], best = cityRows[bestIdx];
+          if (curr.view.stars > best.view.stars ||
+              (curr.view.stars === best.view.stars && curr.cloudPct < best.cloudPct)) {
+            bestIdx = c;
+          }
+        }
+
+        const rows = cityRows.map((row, idx) => {
+          const isBest = idx === bestIdx && row.view.stars > 0;
+          return `
+            <div class="aurora-city-row ${isBest ? 'best-viewing' : ''}">
+              <span class="aurora-city-name">${row.name}${isBest ? '<span class="best-viewing-label">✦ best viewing</span>' : ''}</span>
+              <span class="aurora-cloud ${row.cloud.css}">${row.cloud.label}</span>
+              <span class="aurora-stars">${renderStars(row.view.stars)}</span>
+              <span class="aurora-rating ${row.view.css}">${row.view.label}</span>
+            </div>
+          `;
+        }).join('');
+
+        auroraDays.push(`
+          <div class="aurora-day">
+            <div class="aurora-day-header">
+              ${formatDayLong(dateKey, d)}
+              <span class="day-date">${formatDate(dateKey)}</span>
+              <span class="kp-badge ${kpLevel.css}">${kpLevel.label}</span>
+            </div>
+            <div class="aurora-cities">${rows}</div>
+          </div>
+        `);
+      }
+
+      const kpNote = kpData
+        ? 'Kp index averaged from nighttime hours (8PM–6AM AKDT). Higher Kp = stronger aurora.'
+        : 'Kp data unavailable — cloud cover still shown for planning.';
+
+      auroraContainer.innerHTML = `
+        <div class="aurora-section">
+          <div class="section-label">// aurora forecast</div>
+          ${auroraDays.join('')}
+          <div class="aurora-note">${kpNote}</div>
+        </div>
+      `;
+
     } catch (err) {
       container.innerHTML = '<div class="error-msg">couldn\'t load weather data. try refreshing.</div>';
+      auroraContainer.innerHTML = '';
     }
   }
 
