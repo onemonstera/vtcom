@@ -641,12 +641,12 @@
   .aurora-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
+    gap: 0.4rem 1rem;
     margin-top: 0.75rem;
     font-size: 0.7rem;
     color: #6a6a8a;
   }
-  .aurora-legend .legend-group { display: flex; gap: 0.4rem; align-items: center; }
+  .aurora-legend .legend-group { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; align-items: center; }
 
   /* Responsive */
   @media (max-width: 768px) {
@@ -659,6 +659,11 @@
     .aurora-city-name { width: 5rem; }
     .aurora-cloud { width: auto; }
     .aurora-detail-panel { overflow-x: auto; }
+    .aurora-grid th { padding: 0.3rem; font-size: 0.6rem; }
+    .aurora-grid td { padding: 0.3rem; font-size: 0.75rem; }
+    .aurora-grid td:first-child { font-size: 0.68rem; }
+    .aurora-detail-panel { padding: 0.75rem; }
+    .weather-page { padding: 2rem 1rem 4rem; }
   }
 </style>
 </head>
@@ -681,11 +686,6 @@
   </div>
 
   <div class="city-filter" id="cityFilter"></div>
-
-  <div class="view-toggle">
-    <button class="toggle-btn tab-btn" data-tab="weather">Weather</button>
-    <button class="toggle-btn tab-btn" data-tab="aurora">Aurora</button>
-  </div>
 
   <div id="weatherTab" class="tab-content">
     <div class="view-toggle" id="weatherSubToggle" style="margin-bottom:1.5rem;">
@@ -863,11 +863,12 @@
   // --- Tab toggle (Weather / Aurora) ---
   function switchTab(tab) {
     currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
     document.getElementById('weatherTab').style.display = tab === 'weather' ? 'block' : 'none';
     document.getElementById('auroraTab').style.display = tab === 'aurora' ? 'block' : 'none';
+    // Update page title and header
+    const titleEl = document.querySelector('.page-title');
+    if (titleEl) titleEl.textContent = tab === 'aurora' ? 'Alaska Aurora' : 'Alaska Weather';
+    document.title = (tab === 'aurora' ? 'Aurora' : 'Weather') + ' — vinhtrinh.com';
     // Highlight correct nav link
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     const navTarget = tab === 'aurora' ? 'weather.html#aurora' : 'weather.html#weather';
@@ -878,13 +879,6 @@
 
   // Read initial tab from URL hash
   let currentTab = location.hash === '#aurora' ? 'aurora' : 'weather';
-
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchTab(btn.dataset.tab);
-      history.replaceState(null, '', `#${btn.dataset.tab}`);
-    });
-  });
 
   switchTab(currentTab);
 
