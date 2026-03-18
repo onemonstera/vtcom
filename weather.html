@@ -436,12 +436,38 @@
     <div class="status-msg">fetching aurora data...</div>
   </div>
 
-  <div class="data-note">
+  <div class="data-note" id="dataNote">
     Weather from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · Aurora Kp from <a href="https://www.swpc.noaa.gov" target="_blank">NOAA SWPC</a> · Updated on page load
   </div>
 </div>
 
 <script>
+  // --- Cache ---
+  const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+  function getCache(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const { timestamp, data } = JSON.parse(raw);
+      if (Date.now() - timestamp > CACHE_TTL) return null;
+      return { data, timestamp };
+    } catch { return null; }
+  }
+
+  function setCache(key, data) {
+    try {
+      localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+    } catch { /* quota exceeded — silently fail */ }
+  }
+
+  function cacheAgeText(timestamp) {
+    const mins = Math.round((Date.now() - timestamp) / 60000);
+    if (mins < 1) return 'just now';
+    if (mins === 1) return '1 min ago';
+    return `${mins} min ago`;
+  }
+
   // --- Config ---
   const CITIES = [
     { name: 'Anchorage', lat: 61.2181, lon: -149.9003, sub: '61.22°N 149.90°W' },
@@ -569,6 +595,9 @@
   }
 
   async function fetchKpForecast() {
+    const cached = getCache('vtcom_kp');
+    if (cached) return cached.data;
+
     try {
       const res = await fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json');
       if (!res.ok) return null;
@@ -602,6 +631,7 @@
         const arr = vals.night.length > 0 ? vals.night : vals.all;
         result[date] = arr.reduce((a, b) => a + b, 0) / arr.length;
       }
+      setCache('vtcom_kp', result);
       return result;
     } catch {
       return null;
@@ -614,24 +644,34 @@
     const auroraContainer = document.getElementById('auroraContent');
 
     try {
-      const fetches = CITIES.map(city => {
-        const url = 'https://api.open-meteo.com/v1/forecast'
-          + `?latitude=${city.lat}&longitude=${city.lon}`
-          + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max,cloudcover_mean'
-          + '&temperature_unit=celsius'
-          + '&timezone=America%2FAnchorage'
-          + '&forecast_days=5';
-        return fetch(url).then(r => {
-          if (!r.ok) throw new Error('API error');
-          return r.json();
-        });
-      });
+      let allData;
+      let weatherFromCache = false;
+      let weatherCacheTime = null;
 
-      // Fetch weather + Kp in parallel
-      const [allData, kpData] = await Promise.all([
-        Promise.all(fetches),
-        fetchKpForecast()
-      ]);
+      const weatherCache = getCache('vtcom_weather');
+      if (weatherCache) {
+        allData = weatherCache.data;
+        weatherFromCache = true;
+        weatherCacheTime = weatherCache.timestamp;
+      } else {
+        const fetches = CITIES.map(city => {
+          const url = 'https://api.open-meteo.com/v1/forecast'
+            + `?latitude=${city.lat}&longitude=${city.lon}`
+            + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max,cloudcover_mean'
+            + '&temperature_unit=celsius'
+            + '&timezone=America%2FAnchorage'
+            + '&forecast_days=5';
+          return fetch(url).then(r => {
+            if (!r.ok) throw new Error('API error');
+            return r.json();
+          });
+        });
+        allData = await Promise.all(fetches);
+        setCache('vtcom_weather', allData);
+      }
+
+      // Fetch Kp (has its own caching)
+      const kpData = await fetchKpForecast();
 
       const results = allData.map((data, i) => ({
         name: CITIES[i].name,
@@ -788,6 +828,12 @@
           <div class="aurora-note">${kpNote}</div>
         </div>
       `;
+
+      // Update footer with cache status
+      const noteEl = document.getElementById('dataNote');
+      if (weatherFromCache && weatherCacheTime) {
+        noteEl.innerHTML += ` · <span style="color:#4caf80">cached · fetched ${cacheAgeText(weatherCacheTime)}</span>`;
+      }
 
     } catch (err) {
       container.innerHTML = '<div class="error-msg">couldn\'t load weather data. try refreshing.</div>';
