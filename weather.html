@@ -1358,12 +1358,14 @@
             const cellsHTML = cells.map(c =>
               `<td>
                 <span class="cell-cloud">${cloudIcon(c.cPct)}</span>
-                <span class="cell-kp">Kp ${c.kp.toFixed(1)}</span>
                 <span class="cell-stars">${renderStarsColored(c.view.stars)}</span>
               </td>`
             ).join('');
             return `<tr><td>${city.name}</td>${cellsHTML}</tr>`;
           }).join('');
+
+          // Kp row at top (same for all cities, shown once per window)
+          const kpRow = windows.map(w => `<td>Kp ${w.kp.toFixed(1)}</td>`).join('');
 
           const dayLabel = dayIdx === 0 ? 'Tonight' : formatDayLong(day.dateKey, dayIdx) + ' night';
 
@@ -1376,6 +1378,7 @@
               <table class="aurora-grid aurora-detail-grid">
                 <thead><tr><th></th>${winHeaders}</tr></thead>
                 <tbody>
+                  <tr class="kp-row"><td></td>${kpRow}</tr>
                   ${winCityRows}
                 </tbody>
               </table>
