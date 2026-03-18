@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alaska Aurora & Weather Dashboard — vinhtrinh.com</title>
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.project.css">
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">Home</a>
+  <a href="../projects.html" class="active">Projects</a>
+  <a href="../weather.html#aurora">Aurora</a>
+  <a href="../weather.html#weather">Weather</a>
+  <a href="../countdown.html">Countdown</a>
+  <a href="../about.html">About</a>
+</nav>
+
+<div class="project-page">
+  <a class="back-link" href="../projects.html">← back to projects</a>
+
+  <div class="project-header">
+    <div class="project-meta">
+      <span class="category-tag">Personal · Data</span>
+      <span class="status-badge status-shipped">shipped</span>
+    </div>
+    <h1 class="project-title">Alaska Aurora & Weather Dashboard</h1>
+    <p class="project-subtitle">Multi-city aurora forecasting and weather comparison for an Alaska trip.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">// the problem</div>
+    <div class="prose">
+      <p>Planning an Alaska trip where aurora viewing was a priority. The existing tools —
+      NOAA's raw Kp index charts, the OVATION model map, and separate weather sites —
+      each showed one piece of the puzzle. None of them answered the actual question:
+      "Which city, which night, which hour gives me the best chance of seeing the aurora?"</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// approach</div>
+    <ul class="detail-list">
+      <li>Combined three data sources into one view: NOAA's 3-day Kp forecast (geomagnetic activity), NOAA's OVATION model (real-time aurora intensity by lat/lon), and Open-Meteo hourly cloud cover</li>
+      <li>Built a viewability score that combines Kp strength with cloud conditions — high Kp means nothing if the sky is overcast</li>
+      <li>Used nighttime-only cloud averages (8PM–6AM) instead of daily averages, since daytime clouds are irrelevant for aurora</li>
+      <li>Added an expandable 3-hour detail view matching NOAA's Kp intervals, so you can pick the exact window to go outside</li>
+      <li>OVATION "Right Now" card shows real-time aurora intensity per city using nearest grid point lookup with longitude conversion (negative west → 0-360)</li>
+      <li>Toggleable city filter lets you focus on just the cities you're actually visiting</li>
+      <li>Two-tier caching strategy: 1-hour TTL for weather/Kp data, 15-minute TTL for real-time OVATION data</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// data pipeline</div>
+    <ul class="detail-list">
+      <li>NOAA Planetary K-Index Forecast → 3-hour Kp windows, grouped by Alaska evening date, nighttime hours only (UTC 04:00–14:00)</li>
+      <li>NOAA OVATION Aurora Model → ~37,000 lat/lon grid points, nearest-neighbor lookup per city</li>
+      <li>Open-Meteo Hourly Forecast → cloud cover bucketed into 3-hour windows to match Kp intervals</li>
+      <li>All fetched client-side with localStorage caching — no backend needed</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    The aurora doesn't care about your schedule. The best you can do is stack the odds —
+    right Kp, clear skies, right time window — and be ready to drive.
+    This tool just makes the math visible.
+  </div>
+
+  <div class="section">
+    <div class="section-label">// design decisions</div>
+    <ul class="detail-list">
+      <li>Compact grid table with SVG cloud icons and color-coded star ratings — at-a-glance instead of paragraph-style forecasts</li>
+      <li>Kp bar visualization uses the standard NOAA green-to-red color scale</li>
+      <li>OVATION intensity displayed as discrete segment blocks — visual and proportional without needing numbers</li>
+      <li>Progressive disclosure: summary grid shows the 3-day overview, tap a day to drill into 3-hour windows</li>
+      <li>City filter persists in localStorage so it remembers your trip plan across sessions</li>
+    </ul>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-label">// tags</div>
+    <div class="tag-list">
+      <span class="tag">Data Visualization</span>
+      <span class="tag">Web</span>
+      <span class="tag">APIs</span>
+      <span class="tag">Weather</span>
+      <span class="tag">Aurora</span>
+      <span class="tag">Personal</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// links</div>
+    <div class="project-links">
+      <a href="../weather.html#aurora" class="project-link">↗ Aurora Dashboard</a>
+      <a href="../weather.html#weather" class="project-link">↗ Weather Dashboard</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

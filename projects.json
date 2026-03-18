@@ -1,5 +1,13 @@
 [
   {
+    "title": "Alaska Aurora & Weather Dashboard",
+    "category": "Personal",
+    "tags": ["Data Visualization", "Web", "APIs", "Weather", "Aurora"],
+    "description": "Multi-city aurora forecast combining NOAA Kp index, OVATION real-time model, and hourly cloud cover into a single at-a-glance dashboard. Built for an Alaska trip.",
+    "status": "shipped",
+    "link": "projects/aurora-weather.html"
+  },
+  {
     "title": "Auto Indoor Plant Watering System",
     "category": "Personal",
     "tags": ["Hardware", "IoT", "Automation"],
