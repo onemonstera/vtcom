@@ -20,7 +20,11 @@ nav {
   top: 0;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+nav::-webkit-scrollbar { display: none; }
 
 nav a {
   color: #a0a0b8;
@@ -32,6 +36,8 @@ nav a {
   letter-spacing: 0.3px;
   transition: color 0.2s, border-color 0.2s;
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 nav a:hover {

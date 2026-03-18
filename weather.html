@@ -641,9 +641,10 @@
 <nav>
   <a href="index.html">Home</a>
   <a href="projects.html">Projects</a>
+  <a href="weather.html#aurora">Aurora</a>
+  <a href="weather.html#weather">Weather</a>
   <a href="countdown.html">Countdown</a>
   <a href="about.html">About</a>
-  <a href="weather.html" class="active">Weather</a>
 </nav>
 
 <div class="weather-page">
@@ -788,19 +789,37 @@
   }
 
   // --- Tab toggle (Weather / Aurora) ---
-  let currentTab = 'weather';
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    document.getElementById('weatherTab').style.display = tab === 'weather' ? 'block' : 'none';
+    document.getElementById('auroraTab').style.display = tab === 'aurora' ? 'block' : 'none';
+    // Highlight correct nav link
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    const navTarget = tab === 'aurora' ? 'weather.html#aurora' : 'weather.html#weather';
+    document.querySelectorAll('nav a').forEach(a => {
+      if (a.getAttribute('href') === navTarget) a.classList.add('active');
+    });
+  }
+
+  // Read initial tab from URL hash
+  let currentTab = location.hash === '#aurora' ? 'aurora' : 'weather';
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      currentTab = btn.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('weatherTab').style.display = currentTab === 'weather' ? 'block' : 'none';
-      document.getElementById('auroraTab').style.display = currentTab === 'aurora' ? 'block' : 'none';
+      switchTab(btn.dataset.tab);
+      history.replaceState(null, '', `#${btn.dataset.tab}`);
     });
   });
 
-  document.querySelector('.tab-btn[data-tab="weather"]').classList.add('active');
+  switchTab(currentTab);
+
+  // Handle back/forward navigation
+  window.addEventListener('hashchange', () => {
+    switchTab(location.hash === '#aurora' ? 'aurora' : 'weather');
+  });
 
   // --- Weather sub-toggle (By Day / By City) ---
   let currentView = 'day';
