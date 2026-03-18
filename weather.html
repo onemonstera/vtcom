@@ -1424,30 +1424,13 @@
           timeZone: 'America/Anchorage', timeZoneName: 'short'
         });
 
-        // Filter OVATION cities to enabled set
         const filteredOvation = ovationData.cities.filter(c => enabledCities.has(c.name));
 
-        // Find best city (highest intensity, break ties by cloud cover today)
-        let bestOvIdx = 0;
-        for (let c = 1; c < filteredOvation.length; c++) {
-          const curr = filteredOvation[c], best = filteredOvation[bestOvIdx];
-          const currResult = results.find(r => r.name === curr.name);
-          const bestResult = results.find(r => r.name === best.name);
-          if (curr.intensity > best.intensity ||
-              (curr.intensity === best.intensity &&
-               (currResult?.data.cloud[0] ?? 50) < (bestResult?.data.cloud[0] ?? 50))) {
-            bestOvIdx = c;
-          }
-        }
-
-        const ovRows = filteredOvation.map((c, idx) => {
-          const level = getIntensityLabel(c.intensity);
-          const isBest = idx === bestOvIdx && c.intensity > 0;
+        const ovRows = filteredOvation.map(c => {
           return `
-            <div class="ovation-row ${isBest ? 'best-viewing' : ''}">
-              <span class="ovation-city">${c.name}${isBest ? '<span class="best-viewing-label">✦ best viewing</span>' : ''}</span>
+            <div class="ovation-row">
+              <span class="ovation-city">${c.name}</span>
               <div class="ovation-bar">${renderBar(c.intensity)}</div>
-              <span class="ovation-label ${level.css}">${level.label}</span>
             </div>
           `;
         }).join('');
