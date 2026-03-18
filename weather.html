@@ -1055,8 +1055,11 @@
 
       // Update footer with cache status
       const noteEl = document.getElementById('dataNote');
+      const sources = 'Weather from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · Aurora Kp from <a href="https://www.swpc.noaa.gov" target="_blank">NOAA SWPC</a>';
       if (weatherFromCache && weatherCacheTime) {
-        noteEl.innerHTML += ` · <span style="color:#4caf80">cached · fetched ${cacheAgeText(weatherCacheTime)}</span>`;
+        noteEl.innerHTML = sources + ` · <span style="color:#4caf80">cached · fetched ${cacheAgeText(weatherCacheTime)}</span>`;
+      } else {
+        noteEl.innerHTML = sources + ' · Updated just now';
       }
 
     } catch (err) {
