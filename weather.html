@@ -44,6 +44,32 @@
     margin-top: 0.25rem;
   }
 
+  /* City filter chips */
+  .city-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .city-chip {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 50px;
+    border: 1px solid rgba(108,99,255,0.25);
+    background: transparent;
+    color: #a0a0b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .city-chip:hover { border-color: rgba(108,99,255,0.5); }
+  .city-chip.active {
+    background: rgba(108,99,255,0.15);
+    border-color: #6c63ff;
+    color: #e8e8f0;
+  }
+
   /* View toggle */
   .view-toggle {
     display: flex;
@@ -654,6 +680,8 @@
     <span class="why-note">trip planning</span>
   </div>
 
+  <div class="city-filter" id="cityFilter"></div>
+
   <div class="view-toggle">
     <button class="toggle-btn tab-btn" data-tab="weather">Weather</button>
     <button class="toggle-btn tab-btn" data-tab="aurora">Aurora</button>
@@ -717,6 +745,50 @@
     { name: 'Denali (Healy)', lat: 63.8697, lon: -149.0211, sub: '63.87°N 149.02°W' },
     { name: 'Fairbanks', lat: 64.8378, lon: -147.7164, sub: '64.84°N 147.72°W' },
   ];
+
+  // --- City filter ---
+  const CITY_FILTER_KEY = 'vtcom_city_filter';
+  let enabledCities = new Set(CITIES.map(c => c.name));
+
+  // Restore from localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem(CITY_FILTER_KEY));
+    if (saved && Array.isArray(saved) && saved.length > 0) {
+      enabledCities = new Set(saved.filter(n => CITIES.some(c => c.name === n)));
+      if (enabledCities.size === 0) enabledCities = new Set(CITIES.map(c => c.name));
+    }
+  } catch {}
+
+  function saveCityFilter() {
+    localStorage.setItem(CITY_FILTER_KEY, JSON.stringify([...enabledCities]));
+  }
+
+  function renderCityChips() {
+    const container = document.getElementById('cityFilter');
+    container.innerHTML = CITIES.map(c =>
+      `<button class="city-chip ${enabledCities.has(c.name) ? 'active' : ''}" data-city="${c.name}">${c.name}</button>`
+    ).join('');
+    // Update subtitle
+    const sub = document.querySelector('.page-sub');
+    if (sub) sub.textContent = [...enabledCities].join(' · ');
+  }
+
+  document.getElementById('cityFilter').addEventListener('click', e => {
+    const chip = e.target.closest('.city-chip');
+    if (!chip) return;
+    const name = chip.dataset.city;
+    if (enabledCities.has(name)) {
+      if (enabledCities.size <= 1) return; // keep at least one
+      enabledCities.delete(name);
+    } else {
+      enabledCities.add(name);
+    }
+    saveCityFilter();
+    renderCityChips();
+    loadWeather(); // re-render with filtered cities
+  });
+
+  renderCityChips();
 
   const WMO = {
     0:  { label: 'Clear sky',        emoji: '☀️' },
@@ -1146,16 +1218,20 @@
         fetchHourlyCloud()
       ]);
 
-      const results = allData.map((data, i) => ({
+      // Build indices of enabled cities for filtering
+      const enabledIndices = CITIES.map((c, i) => i).filter(i => enabledCities.has(CITIES[i].name));
+
+      const results = enabledIndices.map(i => ({
         name: CITIES[i].name,
         sub: CITIES[i].sub,
+        _origIdx: i,
         data: {
-          time: data.daily.time,
-          max: data.daily.temperature_2m_max,
-          min: data.daily.temperature_2m_min,
-          code: data.daily.weathercode,
-          precip: data.daily.precipitation_probability_max,
-          cloud: data.daily.cloudcover_mean || [],
+          time: allData[i].daily.time,
+          max: allData[i].daily.temperature_2m_max,
+          min: allData[i].daily.temperature_2m_min,
+          code: allData[i].daily.weathercode,
+          precip: allData[i].daily.precipitation_probability_max,
+          cloud: allData[i].daily.cloudcover_mean || [],
         }
       }));
 
@@ -1275,9 +1351,9 @@
         const kpWindows = kpEntry ? kpEntry.windows : [];
         const kpLevel = getKpLevel(kpVal);
 
-        const cities = results.map((city, idx) => {
+        const cities = results.map((city) => {
           // Use nighttime avg from hourly data, fall back to daily mean
-          const nightCloud = hourlyCloudData ? getNighttimeCloudAvg(hourlyCloudData[idx], dateKey) : null;
+          const nightCloud = hourlyCloudData ? getNighttimeCloudAvg(hourlyCloudData[city._origIdx], dateKey) : null;
           const cloudPct = nightCloud !== null ? nightCloud : (city.data.cloud[d] ?? 50);
           const cloud = getCloudLabel(cloudPct);
           const view = kpVal !== null
@@ -1351,18 +1427,23 @@
           timeZone: 'America/Anchorage', timeZoneName: 'short'
         });
 
+        // Filter OVATION cities to enabled set
+        const filteredOvation = ovationData.cities.filter(c => enabledCities.has(c.name));
+
         // Find best city (highest intensity, break ties by cloud cover today)
         let bestOvIdx = 0;
-        for (let c = 1; c < ovationData.cities.length; c++) {
-          const curr = ovationData.cities[c], best = ovationData.cities[bestOvIdx];
+        for (let c = 1; c < filteredOvation.length; c++) {
+          const curr = filteredOvation[c], best = filteredOvation[bestOvIdx];
+          const currResult = results.find(r => r.name === curr.name);
+          const bestResult = results.find(r => r.name === best.name);
           if (curr.intensity > best.intensity ||
               (curr.intensity === best.intensity &&
-               (results[c]?.data.cloud[0] ?? 50) < (results[bestOvIdx]?.data.cloud[0] ?? 50))) {
+               (currResult?.data.cloud[0] ?? 50) < (bestResult?.data.cloud[0] ?? 50))) {
             bestOvIdx = c;
           }
         }
 
-        const ovRows = ovationData.cities.map((c, idx) => {
+        const ovRows = filteredOvation.map((c, idx) => {
           const level = getIntensityLabel(c.intensity);
           const isBest = idx === bestOvIdx && c.intensity > 0;
           return `
@@ -1428,9 +1509,9 @@
 
           // Build detail table: time windows as columns, cities as rows
           const winHeaders = windows.map(w => `<th>${w.label}</th>`).join('');
-          const winCityRows = results.map((city, cityIdx) => {
+          const winCityRows = results.map((city) => {
             const cells = windows.map(w => {
-              const cloudPct = getCloudFor3hrWindow(hourlyCloudData ? hourlyCloudData[cityIdx] : null, w.utcStart);
+              const cloudPct = getCloudFor3hrWindow(hourlyCloudData ? hourlyCloudData[city._origIdx] : null, w.utcStart);
               const cPct = cloudPct !== null ? cloudPct : 50;
               const cloud = getCloudLabel(cPct);
               const kpLevel = getKpLevel(w.kp);
