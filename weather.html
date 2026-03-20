@@ -1201,12 +1201,33 @@
         return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" style="vertical-align:middle"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${bg}" stroke="${fill}" stroke-width="1"/>${fillEl}</svg>`;
       }
 
-      const auroraGridDays = Math.min(numDays, 3);
+      // Determine aurora grid date keys
+      // If we're between midnight-6AM AKDT, we're still in "tonight" but the calendar
+      // has flipped, so prepend yesterday's evening date to keep it visible
+      const akNow = new Date(Date.now() - 8 * 3600000);
+      const akCurrentHour = akNow.getUTCHours();
+      const isAfterMidnight = akCurrentHour < 6;
+
+      let auroraDateKeys;
+      if (isAfterMidnight) {
+        // Yesterday's evening is still "tonight" — prepend it
+        const yesterday = new Date(akNow.getTime() - 24 * 3600000);
+        const yesterdayKey = yesterday.toISOString().slice(0, 10);
+        auroraDateKeys = [yesterdayKey];
+        for (let d = 0; d < Math.min(numDays, 2); d++) {
+          auroraDateKeys.push(results[0].data.time[d]);
+        }
+      } else {
+        auroraDateKeys = [];
+        for (let d = 0; d < Math.min(numDays, 3); d++) {
+          auroraDateKeys.push(results[0].data.time[d]);
+        }
+      }
 
       // Build per-day data using nighttime cloud averages
       const gridData = [];
-      for (let d = 0; d < auroraGridDays; d++) {
-        const dateKey = results[0].data.time[d];
+      for (let d = 0; d < auroraDateKeys.length; d++) {
+        const dateKey = auroraDateKeys[d];
         const kpEntry = kpData ? (kpData[dateKey] ?? null) : null;
         const kpVal = kpEntry ? kpEntry.avg : null;
         const kpWindows = kpEntry ? kpEntry.windows : [];
@@ -1215,7 +1236,9 @@
         const cities = results.map((city) => {
           // Use nighttime avg from hourly data, fall back to daily mean
           const nightCloud = hourlyCloudData ? getNighttimeCloudAvg(hourlyCloudData[city._origIdx], dateKey) : null;
-          const cloudPct = nightCloud !== null ? nightCloud : (city.data.cloud[d] ?? 50);
+          // For fallback, find the matching day index in the daily data (may differ from grid column index after midnight)
+          const dailyIdx = city.data.time.indexOf(dateKey);
+          const cloudPct = nightCloud !== null ? nightCloud : (dailyIdx >= 0 ? (city.data.cloud[dailyIdx] ?? 50) : 50);
           const cloud = getCloudLabel(cloudPct);
           const view = kpVal !== null
             ? getViewability(kpLevel.score, cloud.score)
@@ -1235,10 +1258,23 @@
         gridData.push({ dateKey, kpVal, kpLevel, kpWindows, cities, bestIdx });
       }
 
-      // Header row: clickable day columns with chevron
-      const headerCells = gridData.map((day, d) =>
-        `<th data-day="${d}">${formatDay(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span><span class="chevron">▾</span></th>`
-      ).join('');
+      // Header row: clickable day columns with chevron (only if windows are available)
+      // When after midnight, column labels shift: col 0 = "Tonight" (yesterday's evening, still ongoing)
+      function auroraGridLabel(dateKey, colIdx) {
+        if (isAfterMidnight) {
+          if (colIdx === 0) return 'Tonight';
+          if (colIdx === 1) return 'Tmrw';
+          const d = new Date(dateKey + 'T12:00:00');
+          return d.toLocaleDateString('en-US', { weekday: 'short' });
+        }
+        return formatDay(dateKey, colIdx);
+      }
+      const headerCells = gridData.map((day, d) => {
+        const hasWindows = day.kpWindows && day.kpWindows.length > 0;
+        return hasWindows
+          ? `<th data-day="${d}">${auroraGridLabel(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span><span class="chevron">▾</span></th>`
+          : `<th>${auroraGridLabel(day.dateKey, d)}<br><span style="font-weight:400;opacity:0.6">${formatDate(day.dateKey)}</span></th>`;
+      }).join('');
 
       // City rows
       const cityRowsHTML = results.map((city, cityIdx) => {
@@ -1374,7 +1410,14 @@
           // Kp row at top (same for all cities, shown once per window)
           const kpRow = windows.map(w => `<td>${renderKpBar(w.kp)}</td>`).join('');
 
-          const dayLabel = dayIdx === 0 ? 'Tonight' : formatDayLong(day.dateKey, dayIdx) + ' night';
+          let dayLabel;
+          if (isAfterMidnight) {
+            if (dayIdx === 0) dayLabel = 'Tonight';
+            else if (dayIdx === 1) dayLabel = 'Tomorrow night';
+            else dayLabel = formatDayLong(day.dateKey, dayIdx) + ' night';
+          } else {
+            dayLabel = dayIdx === 0 ? 'Tonight' : formatDayLong(day.dateKey, dayIdx) + ' night';
+          }
 
           panel.innerHTML = `
             <div class="aurora-detail-panel">
