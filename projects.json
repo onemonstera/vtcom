@@ -87,11 +87,12 @@
     "status": "concept"
   },
   {
-    "title": "Capstone Project",
+    "title": "Sony Canvas — HCDE Capstone",
     "category": "School",
-    "tags": ["UX Research", "HCDE"],
-    "description": "Master's capstone project in progress — details coming after June 2026. Check the countdown page for current stress levels.",
-    "status": "in-progress"
+    "tags": ["UX Research", "HCDE", "Product Design", "Hardware", "Sports"],
+    "description": "Master's capstone project sponsored by Sony. A TV-mounted device that projects ambient, intelligent content onto the wall surrounding your television — transforming home sports viewing from passive consumption into a shared, social experience.",
+    "status": "in-progress",
+    "link": "projects/sony-canvas.html"
   },
   {
     "title": "GratApp",
