@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graduation Countdown — vinhtrinh.com</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Party styles for graduation countdown */
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #0b3d91 40%, #0b5a2b 100%);
+    color: #fff;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  nav { background: rgba(0,0,0,0.6); }
+
+  .content { position: relative; z-index: 2; text-align: center; padding: 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: calc(100vh - 56px); }
+
+  h1 { font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: 4px; background: linear-gradient(90deg,#ffd700,#ffffff,#00d1ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+  .subtitle { color: #fff; font-weight:700; margin-bottom:1rem; font-size:1.1rem }
+
+  .countdown { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:2rem }
+  .time-box { background: rgba(255,255,255,0.06); border-radius:12px; padding:1rem 1.5rem; min-width:110px; border: 2px solid rgba(255,255,255,0.12); }
+  .time-number { font-size: clamp(2rem,6vw,4rem); font-weight:900; color:#fff }
+  .time-label { color:#ffd700; letter-spacing:1px }
+
+  /* Hype meter */
+  .hype-section { width: min(90vw, 700px); margin: 0 auto 2rem }
+  .hype-bar-bg { background: rgba(255,255,255,0.06); border-radius:50px; height:36px; overflow:hidden; border:3px solid rgba(255,255,255,0.08) }
+  .hype-bar-fill { height:100%; border-radius:50px; transition: width 1s ease; background: linear-gradient(90deg,#00ffb3,#00d1ff,#ffd700,#ff6ec7); }
+  .hype-status { font-weight:900; margin-top:0.5rem }
+
+  /* Confetti layer */
+  .confetti-layer { position: fixed; inset: 0; pointer-events:none; z-index:1; }
+  .confetti { position:absolute; width:12px; height:12px; opacity:0.95; transform-origin:center; }
+
+  .game-over { display:none; z-index:2; min-height:calc(100vh - 56px); align-items:center; justify-content:center; text-align:center; padding:2rem }
+  .game-over h1 { font-size: clamp(2.5rem,8vw,6rem); background:linear-gradient(90deg,#ff6ec7,#ffd700,#00d1ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent }
+
+  footer { margin-top:1rem; color:#ddd }
+
+  @media (max-width:500px) { .time-box { min-width:70px } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="projects.html">Projects</a>
+  <a href="graduation.html">Countdown</a>
+  <a href="graduation.html" class="active">Graduation</a>
+  <a href="about.html">About</a>
+</nav>
+
+<div class="confetti-layer" id="confettiLayer"></div>
+
+<div class="content" id="mainContent">
+  <h1>GRADUATION COUNTDOWN</h1>
+  <div class="subtitle" id="subtitle">get your cap ready — party incoming 🎓🎉</div>
+
+  <div class="countdown" id="countdown">
+    <div class="time-box">
+      <div class="time-number" id="days">--</div>
+      <div class="time-label">Days</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="hours">--</div>
+      <div class="time-label">Hours</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="minutes">--</div>
+      <div class="time-label">Minutes</div>
+    </div>
+    <div class="time-box">
+      <div class="time-number" id="seconds">--</div>
+      <div class="time-label">Seconds</div>
+    </div>
+  </div>
+
+  <div class="hype-section">
+    <div class="hype-label" style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:6px;color:#fff">
+      <span>Calm</span>
+      <span>Legendary Hype</span>
+    </div>
+    <div class="hype-bar-bg">
+      <div class="hype-bar-fill" id="hypeFill" style="width:0%"></div>
+    </div>
+    <div class="hype-status" id="hypeStatus">Warming up the tassels...</div>
+  </div>
+
+  <footer>Class of 2026 🎓 • Celebrate responsibly</footer>
+</div>
+
+<div class="game-over" id="gameOver">
+  <h1>CONGRATULATIONS!</h1>
+  <p style="font-size:1.25rem; margin-top:0.5rem">You made it — toss your cap and enjoy the moment 🎉🎓✨</p>
+</div>
+
+<script>
+  // Target: June 12, 2026 10:00 AM Pacific (PDT = UTC-7)
+  const DEADLINE = new Date('2026-06-12T17:00:00Z');
+
+  // Shorter hype window (start yesterday)
+  const HYPE_START = new Date('2026-06-11T00:00:00Z');
+  const HYPE_TOTAL = DEADLINE - HYPE_START;
+
+  const subtitleMessages = [
+    "get your cap ready — party incoming 🎓🎉",
+    "tassel on the left? flip it at graduation!",
+    "remember: proud, grateful, slightly tired",
+    "photo op: sunglasses + robe + big grin 😎",
+    "don't forget to hydrate and celebrate safely 💧",
+    "that thesis? now a chapter in your story",
+    "smile for the camera — future you will thank you",
+    "queue the confetti — it's almost showtime 🎊"
+  ];
+
+  const confettiColors = ['#ffd700','#ff6ec7','#00d1ff','#6affc8','#ffffff','#ff9f43'];
+
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
+  const subtitleEl = document.getElementById('subtitle');
+  const hypeFill = document.getElementById('hypeFill');
+  const hypeStatus = document.getElementById('hypeStatus');
+  const mainContent = document.getElementById('mainContent');
+  const gameOver = document.getElementById('gameOver');
+  const confettiLayer = document.getElementById('confettiLayer');
+
+  let subtitleIndex = 0;
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function updateCountdown(){
+    const now = new Date();
+    const diff = DEADLINE - now;
+    if (diff <= 0){
+      mainContent.style.display = 'none';
+      gameOver.style.display = 'flex';
+      burstConfetti(120);
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff/1000);
+    const days = Math.floor(totalSeconds/86400);
+    const hours = Math.floor((totalSeconds%86400)/3600);
+    const minutes = Math.floor((totalSeconds%3600)/60);
+    const seconds = totalSeconds%60;
+
+    daysEl.textContent = days;
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(minutes);
+    secondsEl.textContent = pad(seconds);
+
+    // Hype meter
+    const elapsed = now - HYPE_START;
+    const hypePercent = Math.min(100, Math.max(0, (elapsed / HYPE_TOTAL) * 100));
+    hypeFill.style.width = hypePercent + '%';
+    if (hypePercent < 20) hypeStatus.textContent = 'Low-key excited';
+    else if (hypePercent < 50) hypeStatus.textContent = 'Getting pumped';
+    else if (hypePercent < 80) hypeStatus.textContent = 'Almost buzzing';
+    else hypeStatus.textContent = 'Legendary hype — READY!';
+  }
+
+  function rotateSubtitle(){
+    subtitleEl.style.opacity = 0;
+    setTimeout(()=>{ subtitleIndex = (subtitleIndex+1)%subtitleMessages.length; subtitleEl.textContent = subtitleMessages[subtitleIndex]; subtitleEl.style.opacity = 1 }, 300);
+  }
+
+  function spawnConfetti(){
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    const size = 6 + Math.random()*18;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.top = -Math.random()*10 + 'vh';
+    el.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    el.style.opacity = 0.95;
+    el.style.transition = `transform ${3+Math.random()*3}s linear, top ${3+Math.random()*3}s linear, left ${2+Math.random()*2}s ease-in`;
+    confettiLayer.appendChild(el);
+    requestAnimationFrame(()=>{
+      el.style.top = 110 + Math.random()*20 + 'vh';
+      el.style.left = (parseFloat(el.style.left) + (Math.random()*20-10)) + 'vw';
+      el.style.transform = `rotate(${Math.random()*720}deg) translateY(20px)`;
+    });
+    setTimeout(()=>el.remove(), 7000);
+  }
+
+  function burstConfetti(count){
+    for (let i=0;i<count;i++){
+      setTimeout(spawnConfetti, i*8);
+    }
+  }
+
+  // Init
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  setInterval(rotateSubtitle, 3500);
+  // continuous confetti tease
+  setInterval(spawnConfetti, 600);
+
+</script>
+
+</body>
+</html>
